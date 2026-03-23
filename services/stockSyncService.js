@@ -48,16 +48,29 @@ async function scrapeAccsZone() {
 }
 
 /**
- * Normalize a product title for comparison
+ * Normalize a product title for comparison - strips all separators and extra words
  */
 function normalizeTitle(title) {
   return title
     .replace(/^buy\s+/i, '')
-    .replace(/\s*[–—]\s*/g, ' | ')
-    .replace(/\s*-\s*/g, ' | ')
+    .replace(/\s*[|–—]\s*/g, ' ')
+    .replace(/\s*-\s*/g, ' ')
+    .replace(/[()]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+/**
+ * Create a fingerprint from title - extracts key words for fuzzy matching
+ */
+function titleFingerprint(title) {
+  return normalizeTitle(title)
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2)
+    .sort()
+    .join(' ');
 }
 
 /**
@@ -67,30 +80,57 @@ function matchProducts(scrapedProducts, localProducts) {
   const matches = [];
   const unmatched = [];
 
-  // Build normalized map of local products
-  const localMap = new Map();
+  // Build multiple indexes for matching
+  const localByNorm = new Map();
+  const localByFingerprint = new Map();
   for (const local of localProducts) {
     const norm = normalizeTitle(local.title);
-    localMap.set(norm, local);
+    const fp = titleFingerprint(local.title);
+    localByNorm.set(norm, local);
+    localByFingerprint.set(fp, local);
   }
 
   for (const scraped of scrapedProducts) {
     const normScraped = normalizeTitle(scraped.title);
+    const fpScraped = titleFingerprint(scraped.title);
     let matched = null;
 
     // Pass 1: exact normalized match
-    if (localMap.has(normScraped)) {
-      matched = localMap.get(normScraped);
+    if (localByNorm.has(normScraped)) {
+      matched = localByNorm.get(normScraped);
     }
 
-    // Pass 2: substring containment (local title contains scraped or vice versa)
+    // Pass 2: fingerprint match (same words in any order)
+    if (!matched && localByFingerprint.has(fpScraped)) {
+      matched = localByFingerprint.get(fpScraped);
+    }
+
+    // Pass 3: substring containment
     if (!matched) {
-      for (const [normLocal, local] of localMap.entries()) {
+      for (const [normLocal, local] of localByNorm.entries()) {
         if (normLocal.includes(normScraped) || normScraped.includes(normLocal)) {
           matched = local;
           break;
         }
       }
+    }
+
+    // Pass 4: word overlap scoring (>80% shared words = match)
+    if (!matched) {
+      const scrapedWords = new Set(normScraped.split(/\s+/).filter(w => w.length > 2));
+      let bestScore = 0;
+      let bestLocal = null;
+
+      for (const [normLocal, local] of localByNorm.entries()) {
+        const localWords = new Set(normLocal.split(/\s+/).filter(w => w.length > 2));
+        const shared = [...scrapedWords].filter(w => localWords.has(w)).length;
+        const score = shared / Math.max(scrapedWords.size, localWords.size);
+        if (score > bestScore && score > 0.75) {
+          bestScore = score;
+          bestLocal = local;
+        }
+      }
+      if (bestLocal) matched = bestLocal;
     }
 
     if (matched) {
