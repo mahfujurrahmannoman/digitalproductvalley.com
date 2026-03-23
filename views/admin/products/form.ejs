@@ -1,0 +1,177 @@
+<div class="mb-6">
+  <a href="/admin/products" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Products</a>
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2"><%= product ? 'Edit Product' : 'Create Product' %></h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2">
+    <form method="POST" action="<%= product ? '/admin/products/' + product._id : '/admin/products' %>" enctype="multipart/form-data">
+      <!-- Basic Info -->
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Basic Information</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="label">Title *</label>
+            <input type="text" name="title" value="<%= product ? product.title : '' %>" class="input-field" required>
+          </div>
+
+          <div>
+            <label class="label">Short Description</label>
+            <input type="text" name="shortDescription" value="<%= product ? (product.shortDescription || '') : '' %>" class="input-field">
+          </div>
+
+          <div>
+            <label class="label">Description *</label>
+            <textarea name="description" rows="5" class="input-field" required><%= product ? product.description : '' %></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">Category *</label>
+              <select name="category" class="input-field" required>
+                <option value="">Select Category</option>
+                <% categories.forEach(c => { %>
+                <option value="<%= c._id %>" <%= product && product.category && product.category.toString() === c._id.toString() ? 'selected' : '' %>><%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="label">Price *</label>
+              <input type="number" name="price" step="0.01" min="0" value="<%= product ? product.price : '' %>" class="input-field" required>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="label">Min Quantity</label>
+              <input type="number" name="minQuantity" min="1" value="<%= product ? product.minQuantity : 1 %>" class="input-field">
+            </div>
+            <div>
+              <label class="label">Max Quantity</label>
+              <input type="number" name="maxQuantity" min="1" value="<%= product ? product.maxQuantity : 100 %>" class="input-field">
+            </div>
+            <div>
+              <label class="label">Delivery Type</label>
+              <select name="deliveryType" class="input-field">
+                <option value="auto" <%= product && product.deliveryType === 'auto' ? 'selected' : '' %>>Automatic</option>
+                <option value="manual" <%= product && product.deliveryType === 'manual' ? 'selected' : '' %>>Manual</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="label">Product Image</label>
+            <input type="file" name="image" accept="image/*" class="input-field">
+            <% if (product && product.image) { %>
+            <div class="mt-2">
+              <img src="<%= product.image %>" alt="" class="w-24 h-24 rounded object-cover">
+            </div>
+            <% } %>
+          </div>
+
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" name="isActive" id="isActive" <%= !product || product.isActive ? 'checked' : '' %> class="w-4 h-4 text-primary-600 rounded">
+              <label for="isActive" class="text-sm text-gray-700 dark:text-gray-300">Active</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" name="isFeatured" id="isFeatured" <%= product && product.isFeatured ? 'checked' : '' %> class="w-4 h-4 text-primary-600 rounded">
+              <label for="isFeatured" class="text-sm text-gray-700 dark:text-gray-300">Featured</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Details -->
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Account Details</h2>
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">Account Age</label>
+              <input type="text" name="accountAge" value="<%= product && product.accountDetails ? (product.accountDetails.accountAge || '') : '' %>" placeholder="e.g. 1+ year" class="input-field">
+            </div>
+            <div>
+              <label class="label">Region</label>
+              <input type="text" name="region" value="<%= product && product.accountDetails ? (product.accountDetails.region || '') : '' %>" placeholder="e.g. USA, Global" class="input-field">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">Verification</label>
+              <input type="text" name="verification" value="<%= product && product.accountDetails ? (product.accountDetails.verification || '') : '' %>" placeholder="e.g. Email Verified" class="input-field">
+            </div>
+            <div>
+              <label class="label">Format</label>
+              <input type="text" name="format" value="<%= product && product.accountDetails ? (product.accountDetails.format || '') : '' %>" placeholder="e.g. email:password" class="input-field">
+            </div>
+          </div>
+          <div>
+            <label class="label">Features (comma-separated)</label>
+            <input type="text" name="features" value="<%= product && product.accountDetails && product.accountDetails.features ? product.accountDetails.features.join(', ') : '' %>" placeholder="e.g. 2FA, Premium, Verified" class="input-field">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit" class="btn-primary"><%= product ? 'Update Product' : 'Create Product' %></button>
+        <a href="/admin/products" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Stock Management (edit only) -->
+  <div>
+    <% if (product) { %>
+    <div class="card p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Stock Management</h2>
+      <p class="text-sm text-gray-500 mb-4">Current stock: <span class="font-bold text-lg <%= product.stockCount > 0 ? 'text-green-600' : 'text-red-600' %>"><%= product.stockCount %></span></p>
+
+      <% if (product.deliveryType === 'manual') { %>
+        <!-- Manual Delivery: Set stock count directly -->
+        <form method="POST" action="/admin/products/<%= product._id %>/stock">
+          <input type="hidden" name="stockType" value="manual">
+          <div class="mb-3">
+            <label class="label">Set Stock Quantity</label>
+            <input type="number" name="manualStockCount" min="0" value="<%= product.stockCount %>" class="input-field" required>
+            <p class="text-xs text-gray-400 mt-1">Set the available quantity for this manual delivery product. You will deliver account details to buyers after they purchase.</p>
+          </div>
+          <button type="submit" class="btn-success w-full"><i class="fas fa-save mr-1"></i> Update Stock Count</button>
+        </form>
+      <% } else { %>
+        <!-- Auto Delivery: Bulk add encrypted account credentials -->
+        <form method="POST" action="/admin/products/<%= product._id %>/stock">
+          <input type="hidden" name="stockType" value="auto">
+          <div>
+            <label class="label">Bulk Add Stock</label>
+            <textarea name="stockData" rows="10" class="input-field font-mono text-xs" placeholder="One account per line&#10;email:password&#10;email:password&#10;..."></textarea>
+            <p class="text-xs text-gray-400 mt-1">One account per line. Each line becomes a stock item and will be encrypted. Accounts are auto-delivered to buyers.</p>
+          </div>
+          <button type="submit" class="btn-success w-full mt-3"><i class="fas fa-plus mr-1"></i> Add Stock</button>
+        </form>
+      <% } %>
+    </div>
+
+    <% if (product.deliveryType === 'manual') { %>
+    <div class="card p-6">
+      <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-2"><i class="fas fa-info-circle text-primary-500 mr-1"></i> How Manual Delivery Works</h3>
+      <ul class="text-xs text-gray-500 dark:text-gray-400 space-y-1.5">
+        <li>1. Set stock count above to the number of accounts you have</li>
+        <li>2. When a buyer purchases, stock count decreases and order is set to "Processing"</li>
+        <li>3. Go to <a href="/admin/orders" class="text-primary-500 hover:underline">Orders</a> to see pending deliveries</li>
+        <li>4. Enter account credentials in the order detail page and click "Deliver"</li>
+        <li>5. Buyer sees the delivered accounts in their order page</li>
+      </ul>
+    </div>
+    <% } %>
+
+    <% } else { %>
+    <div class="card p-6">
+      <div class="text-center text-gray-400 py-4">
+        <i class="fas fa-info-circle text-2xl mb-2"></i>
+        <p class="text-sm">Save the product first, then you can manage stock.</p>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>

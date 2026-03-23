@@ -1,0 +1,41 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Earnings</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Current Balance</p>
+      <p class="text-2xl font-bold text-green-600"><%= helpers.formatPrice(wallet.balance) %></p>
+    </div>
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Total Earned</p>
+      <p class="text-2xl font-bold text-primary-500"><%= helpers.formatPrice(wallet.totalEarned) %></p>
+    </div>
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Total Withdrawn</p>
+      <p class="text-2xl font-bold text-gray-800 dark:text-gray-200"><%= helpers.formatPrice(wallet.totalWithdrawn) %></p>
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Earning History</h2>
+    <% if (transactions.length === 0) { %>
+      <p class="text-gray-500">No earnings yet</p>
+    <% } else { %>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
+          <tbody>
+            <% transactions.forEach(t => { %>
+              <tr>
+                <td class="font-medium text-green-600">+<%= helpers.formatPrice(t.amount) %></td>
+                <td><%= t.description %></td>
+                <td><%= helpers.formatDate(t.createdAt) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <%- include('../partials/pagination') %>
+    <% } %>
+  </div>
+</div>

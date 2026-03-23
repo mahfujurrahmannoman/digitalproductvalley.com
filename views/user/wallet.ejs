@@ -1,0 +1,256 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium">Add Funds</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = wallet ? wallet.balance : 0; const currentPage = 'wallet'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Add Funds Area -->
+        <div class="lg:col-span-2">
+          <div class="card">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="font-semibold text-primary-500 text-lg">Add Funds</h3>
+              <p class="text-sm text-gray-500 mt-1">Top up your wallet using cryptocurrency</p>
+            </div>
+
+            <div class="p-4">
+              <form action="/payment/deposit" method="POST" id="deposit-form">
+                <!-- Step 1: Select Payment Gateway -->
+                <div class="mb-6">
+                  <h4 class="font-semibold text-gray-800 mb-3">
+                    <span class="inline-flex items-center justify-center w-6 h-6 bg-primary-500 text-white text-xs rounded-full mr-2">1</span>
+                    Select Payment Gateway
+                  </h4>
+                  <% if (paymentSettings.length === 0) { %>
+                    <p class="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">No payment gateways available at this time.</p>
+                  <% } else { %>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <% paymentSettings.forEach(function(gateway, index) { %>
+                        <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary-500 transition-colors has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50">
+                          <input
+                            type="radio"
+                            name="gateway"
+                            value="<%= gateway.gateway %>"
+                            class="text-primary-500 focus:ring-primary-500"
+                            <%= index === 0 ? 'checked' : '' %>
+                            required
+                          >
+                          <div>
+                            <span class="text-sm font-semibold text-gray-800"><%= gateway.displayName || gateway.gateway %></span>
+                            <% if (gateway.description) { %>
+                              <p class="text-xs text-gray-500"><%= gateway.description %></p>
+                            <% } %>
+                          </div>
+                        </label>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Step 2: Payment Details -->
+                <div class="mb-6">
+                  <h4 class="font-semibold text-gray-800 mb-3">
+                    <span class="inline-flex items-center justify-center w-6 h-6 bg-primary-500 text-white text-xs rounded-full mr-2">2</span>
+                    Payment Details
+                  </h4>
+
+                  <div class="space-y-4">
+                    <div>
+                      <label for="amount" class="label">Amount (USD)</label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+                        <input
+                          type="number"
+                          id="amount"
+                          name="amount"
+                          min="1"
+                          step="0.01"
+                          class="input-field pl-8"
+                          placeholder="Enter amount"
+                          required
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Quick Amounts -->
+                    <div>
+                      <label class="label">Quick Select</label>
+                      <div class="grid grid-cols-4 gap-2">
+                        <% [10, 25, 50, 100].forEach(function(amt) { %>
+                          <button
+                            type="button"
+                            onclick="document.getElementById('amount').value = <%= amt %>"
+                            class="py-2 px-3 text-sm font-medium border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:text-primary-500 transition-colors text-center"
+                          >
+                            $<%= amt %>
+                          </button>
+                        <% }); %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <% if (paymentSettings.length > 0) { %>
+                  <button type="submit" class="btn-primary w-full text-base py-3">
+                    <i class="fas fa-wallet mr-2"></i> Pay Now
+                  </button>
+                <% } %>
+              </form>
+            </div>
+          </div>
+
+          <!-- Transaction History -->
+          <div class="card mt-6">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="font-semibold text-gray-800">Transaction History</h3>
+            </div>
+            <% if (transactions.length === 0) { %>
+              <div class="p-8 text-center text-gray-500">
+                <i class="fas fa-receipt text-4xl mb-3 opacity-50"></i>
+                <p>No transactions yet</p>
+              </div>
+            <% } else { %>
+              <div class="table-container" style="border:none;">
+                <table class="w-full">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Balance</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% transactions.forEach(function(txn) { %>
+                      <tr>
+                        <td>
+                          <div class="flex items-center gap-2">
+                            <% if (txn.amount >= 0) { %>
+                              <span class="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-arrow-down text-green-500 text-xs"></i>
+                              </span>
+                            <% } else { %>
+                              <span class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center">
+                                <i class="fas fa-arrow-up text-red-500 text-xs"></i>
+                              </span>
+                            <% } %>
+                            <span class="text-sm font-medium text-gray-800 capitalize"><%= txn.type.replace(/_/g, ' ') %></span>
+                          </div>
+                        </td>
+                        <td class="font-medium <%= txn.amount >= 0 ? 'text-green-600' : 'text-red-500' %>">
+                          <%= txn.amount >= 0 ? '+' : '' %><%= helpers.formatPrice(Math.abs(txn.amount)) %>
+                        </td>
+                        <td class="text-gray-600"><%= helpers.formatPrice(txn.balanceAfter) %></td>
+                        <td>
+                          <% if (txn.status === 'completed') { %>
+                            <span class="badge-success">Completed</span>
+                          <% } else if (txn.status === 'pending') { %>
+                            <span class="badge-warning">Pending</span>
+                          <% } else if (txn.status === 'failed') { %>
+                            <span class="badge-danger">Failed</span>
+                          <% } else { %>
+                            <span class="badge-info"><%= txn.status %></span>
+                          <% } %>
+                        </td>
+                        <td class="text-gray-500 text-sm"><%= helpers.formatDateTime(txn.createdAt) %></td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+              <%- include('../partials/pagination') %>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Right Info Sidebar -->
+        <div class="lg:col-span-1 space-y-6">
+          <!-- Balance Summary -->
+          <div class="card p-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Balance Summary</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Current Balance</span>
+                <span class="font-bold text-primary-500"><%= helpers.formatPrice(wallet.balance) %></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Total Deposited</span>
+                <span class="font-semibold text-green-600"><%= helpers.formatPrice(wallet.totalDeposited) %></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Total Spent</span>
+                <span class="font-semibold text-red-500"><%= helpers.formatPrice(wallet.totalSpent) %></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supported Cryptocurrencies -->
+          <div class="card p-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Supported Cryptocurrencies</h4>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-2">
+                <i class="fab fa-bitcoin text-2xl text-yellow-500"></i>
+                <p class="text-xs text-gray-500 mt-1">BTC</p>
+              </div>
+              <div class="p-2">
+                <i class="fab fa-ethereum text-2xl text-blue-500"></i>
+                <p class="text-xs text-gray-500 mt-1">ETH</p>
+              </div>
+              <div class="p-2">
+                <i class="fas fa-coins text-2xl text-green-500"></i>
+                <p class="text-xs text-gray-500 mt-1">USDT</p>
+              </div>
+              <div class="p-2">
+                <i class="fas fa-coins text-2xl text-blue-400"></i>
+                <p class="text-xs text-gray-500 mt-1">LTC</p>
+              </div>
+              <div class="p-2">
+                <i class="fas fa-coins text-2xl text-purple-500"></i>
+                <p class="text-xs text-gray-500 mt-1">SOL</p>
+              </div>
+              <div class="p-2">
+                <i class="fas fa-coins text-2xl text-red-500"></i>
+                <p class="text-xs text-gray-500 mt-1">TRX</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- How It Works -->
+          <div class="card p-4">
+            <h4 class="font-semibold text-gray-800 mb-3">How It Works</h4>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-primary-500 text-white text-xs rounded-full flex-shrink-0 mt-0.5">1</span>
+                <p class="text-sm text-gray-600">Select a payment gateway and enter the amount</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-primary-500 text-white text-xs rounded-full flex-shrink-0 mt-0.5">2</span>
+                <p class="text-sm text-gray-600">Complete the payment using your preferred cryptocurrency</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-primary-500 text-white text-xs rounded-full flex-shrink-0 mt-0.5">3</span>
+                <p class="text-sm text-gray-600">Funds will be added to your wallet automatically after confirmation</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

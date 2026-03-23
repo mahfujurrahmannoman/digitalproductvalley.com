@@ -1,0 +1,61 @@
+module.exports = {
+  ROLES: {
+    CUSTOMER: 'customer',
+    SUPPLIER: 'supplier',
+    ADMIN: 'admin',
+  },
+  ORDER_STATUS: {
+    PENDING_PAYMENT: 'pending_payment',
+    PAID: 'paid',
+    PROCESSING: 'processing',
+    DELIVERED: 'delivered',
+    PARTIALLY_DELIVERED: 'partially_delivered',
+    CANCELLED: 'cancelled',
+    REFUNDED: 'refunded',
+    DISPUTED: 'disputed',
+  },
+  DELIVERY_TYPE: {
+    AUTO: 'auto',
+    MANUAL: 'manual',
+  },
+  TRANSACTION_TYPE: {
+    DEPOSIT: 'deposit',
+    PURCHASE: 'purchase',
+    SALE_EARNING: 'sale_earning',
+    WITHDRAWAL: 'withdrawal',
+    REFUND: 'refund',
+    ADMIN_CREDIT: 'admin_credit',
+    ADMIN_DEBIT: 'admin_debit',
+  },
+  TRANSACTION_STATUS: {
+    PENDING: 'pending',
+    COMPLETED: 'completed',
+    FAILED: 'failed',
+    CANCELLED: 'cancelled',
+  },
+  TICKET_STATUS: {
+    OPEN: 'open',
+    IN_PROGRESS: 'in_progress',
+    AWAITING_REPLY: 'awaiting_reply',
+    RESOLVED: 'resolved',
+    CLOSED: 'closed',
+  },
+  STOCK_STATUS: {
+    AVAILABLE: 'available',
+    SOLD: 'sold',
+    RESERVED: 'reserved',
+    INVALID: 'invalid',
+  },
+  PAYMENT_GATEWAYS: {
+    AAMARPAY: 'aamarpay',
+    PLISIO: 'plisio',
+    WALLET: 'wallet',
+  },
+  WITHDRAWAL_STATUS: {
+    PENDING: 'pending',
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    COMPLETED: 'completed',
+  },
+  ITEMS_PER_PAGE: 20,
+};

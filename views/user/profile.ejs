@@ -1,0 +1,225 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium">Profile</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = 0; const currentPage = 'profile'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <% if (errors && errors.length > 0) { %>
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <ul class="list-disc list-inside text-sm">
+            <% errors.forEach(function(error) { %>
+              <li><%= error.msg %></li>
+            <% }); %>
+          </ul>
+        </div>
+      <% } %>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Profile Form -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="card">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="font-semibold text-primary-500 text-lg">Edit Profile</h3>
+            </div>
+            <div class="p-4">
+              <form action="/user/profile" method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="firstName" class="label">First Name</label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value="<%= profile.firstName || '' %>"
+                      class="input-field"
+                      placeholder="First name"
+                    >
+                  </div>
+                  <div>
+                    <label for="lastName" class="label">Last Name</label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value="<%= profile.lastName || '' %>"
+                      class="input-field"
+                      placeholder="Last name"
+                    >
+                  </div>
+                </div>
+
+                <div>
+                  <label for="email" class="label">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value="<%= profile.email %>"
+                    class="input-field bg-gray-100 cursor-not-allowed"
+                    disabled
+                  >
+                  <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                </div>
+
+                <div>
+                  <label for="phone" class="label">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value="<%= profile.phone || '' %>"
+                    class="input-field"
+                    placeholder="Phone number"
+                  >
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                  <h4 class="font-semibold text-gray-800 mb-2">Change Password</h4>
+                  <p class="text-sm text-gray-500 mb-4">Leave blank to keep current password</p>
+                  <div class="space-y-4">
+                    <div>
+                      <label for="currentPassword" class="label">Current Password</label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        name="currentPassword"
+                        class="input-field"
+                        placeholder="Enter current password"
+                      >
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label for="newPassword" class="label">New Password</label>
+                        <input
+                          type="password"
+                          id="newPassword"
+                          name="newPassword"
+                          class="input-field"
+                          placeholder="Min 6 characters"
+                          minlength="6"
+                        >
+                      </div>
+                      <div>
+                        <label for="confirmNewPassword" class="label">Confirm New Password</label>
+                        <input
+                          type="password"
+                          id="confirmNewPassword"
+                          name="confirmNewPassword"
+                          class="input-field"
+                          placeholder="Confirm new password"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="btn-primary">
+                    <i class="fas fa-save mr-1"></i> Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- API Keys -->
+          <div class="card">
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-800">API Keys</h3>
+              <form action="/user/api-keys" method="POST" class="flex items-center gap-2">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Key name"
+                  class="input-field text-sm py-1.5 w-32"
+                >
+                <button type="submit" class="btn-primary text-sm py-1.5">
+                  <i class="fas fa-plus mr-1"></i> Generate
+                </button>
+              </form>
+            </div>
+            <div class="p-4">
+              <% if (typeof apiKeys !== 'undefined' && apiKeys.length > 0) { %>
+                <div class="space-y-3">
+                  <% apiKeys.forEach(function(apiKey) { %>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p class="text-sm font-medium text-gray-800"><%= apiKey.name %></p>
+                        <p class="text-xs font-mono text-gray-500 mt-1">
+                          <%= apiKey.key.substring(0, 12) %>....<%= apiKey.key.substring(apiKey.key.length - 6) %>
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                          Created: <%= helpers.formatDate(apiKey.createdAt) %>
+                          <% if (apiKey.lastUsedAt) { %>
+                            | Last used: <%= helpers.formatDate(apiKey.lastUsedAt) %>
+                          <% } %>
+                        </p>
+                      </div>
+                      <form action="/user/api-keys/<%= apiKey._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this API key?')">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-danger text-sm py-1.5 px-3">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <div class="text-center py-6 text-gray-500">
+                  <i class="fas fa-key text-3xl mb-2 opacity-50"></i>
+                  <p class="text-sm">No API keys yet. Generate one to use the API.</p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Info Card -->
+        <div class="lg:col-span-1">
+          <div class="card p-4">
+            <div class="text-center mb-4">
+              <div class="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-3">
+                <span class="text-3xl font-bold text-primary-500"><%= profile.username.charAt(0).toUpperCase() %></span>
+              </div>
+              <h3 class="font-semibold text-gray-800"><%= profile.username %></h3>
+              <p class="text-sm text-gray-500"><%= profile.email %></p>
+              <span class="badge-info text-xs mt-2 inline-block capitalize"><%= profile.role %></span>
+            </div>
+            <div class="space-y-3 text-sm border-t border-gray-200 pt-4">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Member Since</span>
+                <span class="text-gray-800 font-medium"><%= helpers.formatDate(profile.createdAt) %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Last Login</span>
+                <span class="text-gray-800 font-medium"><%= profile.lastLogin ? helpers.formatDateTime(profile.lastLogin) : 'N/A' %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Email Verified</span>
+                <% if (profile.isEmailVerified) { %>
+                  <span class="text-green-500"><i class="fas fa-check-circle"></i> Yes</span>
+                <% } else { %>
+                  <span class="text-yellow-500"><i class="fas fa-exclamation-circle"></i> No</span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

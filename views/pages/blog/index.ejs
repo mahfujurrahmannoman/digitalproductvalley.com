@@ -1,0 +1,42 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">Blog</h1>
+
+  <% if (categories.length > 0) { %>
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="/blog" class="px-3 py-1 rounded-full text-sm <%= !selectedCategory ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>">All</a>
+      <% categories.forEach(c => { %>
+        <a href="/blog?category=<%= c.slug %>" class="px-3 py-1 rounded-full text-sm <%= selectedCategory === c.slug ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>"><%= c.name %></a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <% if (posts.length === 0) { %>
+    <div class="card p-8 text-center"><p class="text-gray-500">No posts yet</p></div>
+  <% } else { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% posts.forEach(post => { %>
+        <article class="card overflow-hidden hover:shadow-md transition-shadow">
+          <% if (post.featuredImage) { %>
+            <img src="<%= post.featuredImage %>" alt="<%= post.title %>" class="w-full h-48 object-cover">
+          <% } else { %>
+            <div class="w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><i class="fas fa-newspaper text-3xl text-gray-300"></i></div>
+          <% } %>
+          <div class="p-4">
+            <% if (post.category) { %>
+              <span class="text-xs text-primary-500 font-medium"><%= post.category.name %></span>
+            <% } %>
+            <h2 class="font-semibold text-gray-800 dark:text-gray-200 mt-1 mb-2">
+              <a href="/blog/<%= post.slug %>" class="hover:text-primary-500"><%= post.title %></a>
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3"><%= helpers.truncate(post.excerpt || post.content, 120) %></p>
+            <div class="flex items-center justify-between text-xs text-gray-400">
+              <span><%= post.author?.username || 'Admin' %></span>
+              <span><%= helpers.formatDate(post.publishedAt) %></span>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+    <%- include('../../partials/pagination') %>
+  <% } %>
+</div>

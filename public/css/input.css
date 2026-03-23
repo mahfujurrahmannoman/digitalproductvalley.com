@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900 font-sans;
+  }
+}
+
+@layer components {
+  /* ═══════════ BUTTONS ═══════════ */
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2.5 px-5 rounded transition-colors duration-200 inline-flex items-center justify-center gap-2;
+  }
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-5 rounded transition-colors duration-200 inline-flex items-center justify-center gap-2;
+  }
+  .btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white font-medium py-2.5 px-5 rounded transition-colors duration-200 inline-flex items-center justify-center gap-2;
+  }
+  .btn-success {
+    @apply bg-green-500 hover:bg-green-600 text-white font-medium py-2.5 px-5 rounded transition-colors duration-200 inline-flex items-center justify-center gap-2;
+  }
+  .btn-outline-primary {
+    @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-medium py-1.5 px-4 rounded-full transition-colors duration-200 inline-flex items-center justify-center gap-1.5 text-sm;
+  }
+  .btn-outline-pink {
+    @apply border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white font-medium py-1.5 px-4 rounded-full transition-colors duration-200 inline-flex items-center justify-center gap-1.5 text-sm;
+  }
+
+  /* ═══════════ CARDS ═══════════ */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+  }
+
+  /* ═══════════ FORM ELEMENTS ═══════════ */
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 text-gray-900;
+  }
+  .label {
+    @apply block text-sm font-semibold text-gray-700 mb-1;
+  }
+
+  /* ═══════════ BADGES ═══════════ */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+  .badge-danger {
+    @apply badge bg-red-100 text-red-800;
+  }
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  /* ═══════════ TABLES ═══════════ */
+  .table-container {
+    @apply overflow-x-auto rounded-lg border border-gray-200;
+  }
+  .table-container table {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+  .table-container th {
+    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50;
+  }
+  .table-container td {
+    @apply px-4 py-3 text-sm whitespace-nowrap;
+  }
+
+  /* ═══════════ ACCSZONE CATEGORY TABLE ═══════════ */
+  .category-header {
+    @apply bg-navy-800 text-white text-sm font-semibold py-2.5 px-4 border-l-4 border-primary-500 flex items-center justify-between;
+  }
+  .category-header .stock-label,
+  .category-header .price-label {
+    @apply text-gray-300 font-medium;
+  }
+  .product-row {
+    @apply bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center px-4 py-3;
+  }
+  .product-row .product-icon {
+    @apply w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center text-white text-lg mr-4;
+  }
+  .product-row .product-title {
+    @apply flex-1 text-sm text-gray-800 font-normal;
+  }
+  .product-row .product-stock {
+    @apply text-sm text-gray-600 w-24 text-center;
+  }
+  .product-row .product-price-type {
+    @apply text-sm text-gray-500 w-24 text-center;
+  }
+  .product-row .product-price {
+    @apply text-sm font-semibold text-gray-800 w-20 text-center;
+  }
+  .product-row .btn-buy {
+    @apply bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors inline-flex items-center gap-1.5 ml-4;
+  }
+
+  /* ═══════════ USER SIDEBAR ═══════════ */
+  .user-sidebar {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden;
+  }
+  .user-sidebar .sidebar-balance {
+    @apply bg-primary-500 text-white px-5 py-3.5 flex items-center justify-between;
+  }
+  .user-sidebar .sidebar-balance .balance-label {
+    @apply text-sm font-medium;
+  }
+  .user-sidebar .sidebar-balance .balance-amount {
+    @apply text-lg font-bold;
+  }
+  .user-sidebar .sidebar-balance .add-btn {
+    @apply w-7 h-7 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors;
+  }
+  .sidebar-link {
+    @apply flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 text-sm;
+  }
+  .sidebar-link i {
+    @apply w-5 text-gray-500 text-center;
+  }
+  .sidebar-link.active {
+    @apply bg-primary-500 text-white font-medium;
+  }
+  .sidebar-link.active i {
+    @apply text-white;
+  }
+
+  /* ═══════════ DASHBOARD STAT CARDS ═══════════ */
+  .stat-card {
+    @apply bg-white border-2 border-gray-200 rounded-lg p-5 text-center;
+  }
+  .stat-card .stat-icon {
+    @apply text-primary-500 text-3xl mb-2;
+  }
+  .stat-card .stat-label {
+    @apply text-sm text-gray-600 font-medium;
+  }
+  .stat-card .stat-value {
+    @apply text-2xl font-bold text-primary-500 mt-1;
+  }
+
+  /* ═══════════ TOP BAR ═══════════ */
+  .top-bar {
+    @apply bg-gray-800 text-gray-300 text-xs py-1.5;
+  }
+  .top-bar a {
+    @apply text-gray-300 hover:text-white transition-colors;
+  }
+}

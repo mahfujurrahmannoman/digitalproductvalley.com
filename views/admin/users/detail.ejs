@@ -1,0 +1,149 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <a href="/admin/users" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Users</a>
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2"><%= profileUser.username %></h1>
+  </div>
+  <div class="flex gap-2">
+    <% if (profileUser.role !== 'admin') { %>
+    <form method="POST" action="/admin/users/<%= profileUser._id %>/ban">
+      <input type="hidden" name="banReason" value="Banned by admin">
+      <button type="submit" class="<%= profileUser.isBanned ? 'btn-success' : 'btn-danger' %>">
+        <i class="fas fa-<%= profileUser.isBanned ? 'unlock' : 'ban' %> mr-1"></i>
+        <%= profileUser.isBanned ? 'Unban User' : 'Ban User' %>
+      </button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Profile Info -->
+  <div class="card p-5">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Profile Information</h2>
+    <div class="space-y-3">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+          <% if (profileUser.avatar) { %>
+          <img src="<%= profileUser.avatar %>" alt="" class="w-16 h-16 rounded-full object-cover">
+          <% } else { %>
+          <span class="text-2xl font-bold text-primary-600"><%= profileUser.username.charAt(0).toUpperCase() %></span>
+          <% } %>
+        </div>
+        <div>
+          <p class="font-medium text-gray-800 dark:text-white"><%= profileUser.firstName || '' %> <%= profileUser.lastName || '' %></p>
+          <p class="text-sm text-gray-500">@<%= profileUser.username %></p>
+        </div>
+      </div>
+
+      <div class="border-t dark:border-gray-700 pt-3 space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Email</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= profileUser.email %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Phone</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= profileUser.phone || 'N/A' %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Role</span>
+          <span><%= profileUser.role %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Email Verified</span>
+          <span><%= profileUser.isEmailVerified ? 'Yes' : 'No' %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Status</span>
+          <% if (profileUser.isBanned) { %>
+            <span class="badge-danger">Banned</span>
+          <% } else { %>
+            <span class="badge-success">Active</span>
+          <% } %>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Joined</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= helpers.formatDate(profileUser.createdAt) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Last Login</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= profileUser.lastLogin ? helpers.formatDateTime(profileUser.lastLogin) : 'Never' %></span>
+        </div>
+      </div>
+
+      <% if (profileUser.isBanned && profileUser.banReason) { %>
+      <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg mt-3">
+        <p class="text-sm text-red-700 dark:text-red-300"><strong>Ban Reason:</strong> <%= profileUser.banReason %></p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Wallet & Role -->
+  <div class="space-y-6">
+    <!-- Wallet -->
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Wallet</h2>
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Balance</span>
+          <span class="font-bold text-green-600"><%= helpers.formatPrice(wallet.balance) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Deposited</span>
+          <span><%= helpers.formatPrice(wallet.totalDeposited) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Spent</span>
+          <span><%= helpers.formatPrice(wallet.totalSpent) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Earned</span>
+          <span><%= helpers.formatPrice(wallet.totalEarned) %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Role -->
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Change Role</h2>
+      <form method="POST" action="/admin/users/<%= profileUser._id %>/role">
+        <div class="mb-3">
+          <select name="role" class="input-field">
+            <% roles.forEach(r => { %>
+            <option value="<%= r %>" <%= profileUser.role === r ? 'selected' : '' %>><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary w-full">Update Role</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="card p-5">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Recent Orders</h2>
+    <div class="space-y-2">
+      <% orders.forEach(order => { %>
+      <a href="/admin/orders/<%= order._id %>" class="block p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-800 dark:text-white"><%= order.orderNumber %></span>
+          <span class="text-sm font-bold"><%= helpers.formatPrice(order.totalAmount) %></span>
+        </div>
+        <div class="flex justify-between items-center mt-1">
+          <span class="text-xs text-gray-500"><%= helpers.formatDate(order.createdAt) %></span>
+          <% if (order.status === 'delivered') { %>
+            <span class="badge-success text-xs"><%= order.status %></span>
+          <% } else if (order.status === 'refunded' || order.status === 'cancelled') { %>
+            <span class="badge-danger text-xs"><%= order.status %></span>
+          <% } else { %>
+            <span class="badge-warning text-xs"><%= order.status %></span>
+          <% } %>
+        </div>
+      </a>
+      <% }) %>
+      <% if (orders.length === 0) { %>
+      <p class="text-sm text-gray-400 text-center py-4">No orders</p>
+      <% } %>
+    </div>
+  </div>
+</div>

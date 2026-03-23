@@ -1,0 +1,194 @@
+<!-- Breadcrumb -->
+<div class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+  <div class="max-w-4xl mx-auto px-4 py-4">
+    <nav class="text-sm text-gray-500 dark:text-gray-400">
+      <a href="/" class="hover:text-primary-500">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/shop" class="hover:text-primary-500">Shop</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-800 dark:text-white">Checkout</span>
+    </nav>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Left Column: Product + Description -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Product Detail Card -->
+      <div class="card overflow-hidden">
+        <!-- Orange header bar with product title and price -->
+        <div class="bg-primary-500 px-6 py-4 flex items-center justify-between">
+          <h1 class="text-white font-bold text-lg truncate"><%= product ? product.title : 'Product' %></h1>
+          <span class="text-white font-bold text-lg whitespace-nowrap ml-4">
+            <% if (order.items && order.items.length > 0) { %>
+              <%= helpers.formatPrice(order.items[0].unitPrice) %> / piece
+            <% } %>
+          </span>
+        </div>
+
+        <div class="p-6">
+          <div class="flex items-start gap-4">
+            <% if (product && product.image) { %>
+              <img src="<%= product.image %>" alt="<%= product.title %>" class="w-20 h-20 rounded-lg object-cover flex-shrink-0 border border-gray-200">
+            <% } else { %>
+              <div class="w-20 h-20 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-box text-2xl text-gray-400"></i>
+              </div>
+            <% } %>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Order #<%= order.orderNumber %></p>
+              <% if (product && product.category) { %>
+                <span class="badge-info text-xs"><%= product.category.name || 'Digital Product' %></span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Description -->
+      <% if (product && product.description) { %>
+        <div class="card p-6">
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-3">
+            <i class="fas fa-info-circle text-primary-500 mr-2"></i>Product Description
+          </h3>
+          <div class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-2">
+            <% var descLines = product.description.split('\n').filter(function(l) { return l.trim(); }); %>
+            <% if (descLines.length > 1) { %>
+              <ul class="list-disc pl-6 space-y-1">
+                <% descLines.forEach(function(line) { %>
+                  <li><%= line.trim() %></li>
+                <% }); %>
+              </ul>
+            <% } else { %>
+              <p><%= product.description %></p>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Right Column: Order & Payment -->
+    <div class="lg:col-span-1">
+      <div class="card overflow-hidden sticky top-4">
+
+        <form action="/order/checkout" method="POST">
+          <input type="hidden" name="orderId" value="<%= order._id %>">
+
+          <!-- Stock & Quantity -->
+          <div class="p-6 space-y-4">
+            <h2 class="font-semibold text-gray-800 dark:text-white text-lg">Order Summary</h2>
+
+            <% if (product && typeof product.stockCount !== 'undefined') { %>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500 dark:text-gray-400">Stock</span>
+                <span class="font-medium <%= product.stockCount > 0 ? 'text-green-500' : 'text-red-500' %>">
+                  <%= product.stockCount %> available
+                </span>
+              </div>
+            <% } %>
+
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400">Quantity</span>
+              <span class="font-medium text-gray-800 dark:text-white">
+                <% var totalQty = 0; order.items.forEach(function(item) { totalQty += item.quantity; }); %>
+                <%= totalQty %>
+              </span>
+            </div>
+
+            <!-- Promo Code (collapsible) -->
+            <div x-data="{ showPromo: false }">
+              <button type="button" @click="showPromo = !showPromo" class="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1">
+                <i class="fas fa-tag"></i>
+                Have a promo code?
+                <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="showPromo ? 'rotate-180' : ''"></i>
+              </button>
+              <div x-show="showPromo" x-cloak class="mt-2 flex gap-2">
+                <input type="text" name="promoCode" class="input-field text-sm flex-1" placeholder="Enter code">
+                <button type="button" class="btn-secondary text-sm px-3 py-2">Apply</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400">Sub Total</span>
+              <span class="font-medium text-gray-800 dark:text-white"><%= helpers.formatPrice(order.totalAmount) %></span>
+            </div>
+            <div class="flex items-center justify-between text-base font-bold">
+              <span class="text-gray-800 dark:text-white">Grand Total</span>
+              <span class="text-primary-500 text-lg"><%= helpers.formatPrice(order.totalAmount) %></span>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Payment Method</p>
+
+            <!-- Wallet -->
+            <label class="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors border-primary-500 bg-primary-50/50 dark:bg-primary-900/10 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/50">
+              <input type="radio" name="paymentMethod" value="wallet" class="text-primary-500 focus:ring-primary-500" checked>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-gray-800 dark:text-white text-sm">
+                    <i class="fas fa-wallet mr-1"></i>Wallet
+                  </span>
+                  <span class="font-semibold text-sm <%= walletBalance >= order.totalAmount ? 'text-green-500' : 'text-red-500' %>">
+                    <%= helpers.formatPrice(walletBalance) %>
+                  </span>
+                </div>
+                <% if (walletBalance < order.totalAmount) { %>
+                  <p class="text-xs text-red-500 mt-1">
+                    Insufficient balance. Need <%= helpers.formatPrice(order.totalAmount - walletBalance) %> more.
+                  </p>
+                <% } %>
+              </div>
+            </label>
+
+            <!-- AamarPay -->
+            <label class="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/50 dark:has-[:checked]:bg-primary-900/10">
+              <input type="radio" name="paymentMethod" value="aamarpay" class="text-primary-500 focus:ring-primary-500">
+              <div class="flex-1">
+                <span class="font-medium text-gray-800 dark:text-white text-sm">
+                  <i class="fas fa-credit-card mr-1"></i>AamarPay
+                </span>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">bKash, Nagad, Rocket, Card</p>
+              </div>
+            </label>
+
+            <!-- Crypto -->
+            <label class="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/50 dark:has-[:checked]:bg-primary-900/10">
+              <input type="radio" name="paymentMethod" value="plisio" class="text-primary-500 focus:ring-primary-500">
+              <div class="flex-1">
+                <span class="font-medium text-gray-800 dark:text-white text-sm">
+                  <i class="fab fa-bitcoin mr-1"></i>Cryptocurrency
+                </span>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Bitcoin, USDT, ETH via Plisio</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Newsletter + Buy -->
+          <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-4">
+            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              <input type="checkbox" name="newsletter" class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
+              Subscribe to E-mail newsletter
+            </label>
+
+            <button type="submit" class="btn-primary w-full py-3 text-lg font-bold">
+              <i class="fas fa-shopping-cart mr-2"></i>Buy - <%= helpers.formatPrice(order.totalAmount) %>
+            </button>
+
+            <p class="text-xs text-gray-400 dark:text-gray-500 text-center">
+              <i class="fas fa-shield-alt mr-1"></i>Secure & encrypted payment
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

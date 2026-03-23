@@ -1,0 +1,25 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Orders</h1>
+
+  <% if (orders.length === 0) { %>
+    <div class="card p-8 text-center"><p class="text-gray-500">No orders yet</p></div>
+  <% } else { %>
+    <div class="table-container card">
+      <table>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          <% orders.forEach(o => { %>
+            <tr>
+              <td class="font-mono text-sm"><%= o.orderNumber %></td>
+              <td><%= o.user?.username || 'Unknown' %></td>
+              <td class="font-medium"><%= helpers.formatPrice(o.totalAmount) %></td>
+              <td><span class="badge-<%= o.status === 'delivered' ? 'success' : o.status === 'cancelled' ? 'danger' : 'warning' %>"><%= o.status %></span></td>
+              <td><%= helpers.formatDate(o.createdAt) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <%- include('../partials/pagination') %>
+  <% } %>
+</div>

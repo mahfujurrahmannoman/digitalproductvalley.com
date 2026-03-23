@@ -1,0 +1,139 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <a href="/admin/suppliers" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Suppliers</a>
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2"><%= supplier.username %></h1>
+  </div>
+  <div class="flex gap-2">
+    <% if (supplier.supplierInfo && !supplier.supplierInfo.isApproved) { %>
+    <form method="POST" action="/admin/suppliers/<%= supplier._id %>/approve">
+      <button type="submit" class="btn-success"><i class="fas fa-check mr-1"></i> Approve</button>
+    </form>
+    <form method="POST" action="/admin/suppliers/<%= supplier._id %>/reject" onsubmit="return confirm('Reject this supplier? They will be reverted to customer role.')">
+      <button type="submit" class="btn-danger"><i class="fas fa-times mr-1"></i> Reject</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Supplier Info -->
+  <div class="card p-5">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Supplier Information</h2>
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Username</span>
+        <a href="/admin/users/<%= supplier._id %>" class="text-primary-600 hover:underline"><%= supplier.username %></a>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Email</span>
+        <span class="text-gray-800 dark:text-gray-200"><%= supplier.email %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Company Name</span>
+        <span class="text-gray-800 dark:text-gray-200"><%= supplier.supplierInfo ? (supplier.supplierInfo.companyName || 'N/A') : 'N/A' %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Status</span>
+        <% if (supplier.supplierInfo && supplier.supplierInfo.isApproved) { %>
+          <span class="badge-success">Approved</span>
+        <% } else { %>
+          <span class="badge-warning">Pending</span>
+        <% } %>
+      </div>
+      <% if (supplier.supplierInfo && supplier.supplierInfo.approvedAt) { %>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Approved At</span>
+        <span class="text-gray-800 dark:text-gray-200"><%= helpers.formatDate(supplier.supplierInfo.approvedAt) %></span>
+      </div>
+      <% } %>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Joined</span>
+        <span class="text-gray-800 dark:text-gray-200"><%= helpers.formatDate(supplier.createdAt) %></span>
+      </div>
+
+      <% if (supplier.supplierInfo && supplier.supplierInfo.description) { %>
+      <div class="border-t dark:border-gray-700 pt-3 mt-3">
+        <p class="text-sm text-gray-500 mb-1">Description</p>
+        <p class="text-sm text-gray-800 dark:text-gray-200"><%= supplier.supplierInfo.description %></p>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Commission Rate -->
+    <% if (supplier.supplierInfo && supplier.supplierInfo.isApproved) { %>
+    <div class="border-t dark:border-gray-700 pt-4 mt-4">
+      <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-2">Commission Rate</h3>
+      <form method="POST" action="/admin/suppliers/<%= supplier._id %>/approve" class="flex items-center gap-2">
+        <input type="number" name="commissionRate" step="0.1" min="0" max="100" value="<%= supplier.supplierInfo.commissionRate %>" class="input-field w-24">
+        <span class="text-sm text-gray-500">%</span>
+        <button type="submit" class="btn-primary text-xs px-2 py-1">Update</button>
+      </form>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Sales Stats -->
+  <div class="space-y-6">
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Sales Statistics</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Sales</span>
+          <span class="font-bold text-gray-800 dark:text-white"><%= helpers.formatPrice(supplier.supplierInfo ? supplier.supplierInfo.totalSales : 0) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Earnings</span>
+          <span class="font-bold text-green-600"><%= helpers.formatPrice(supplier.supplierInfo ? supplier.supplierInfo.totalEarnings : 0) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Orders</span>
+          <span class="font-medium"><%= totalOrders %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Wallet</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Balance</span>
+          <span class="font-bold text-green-600"><%= helpers.formatPrice(wallet.balance) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Earned</span>
+          <span><%= helpers.formatPrice(wallet.totalEarned) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Total Withdrawn</span>
+          <span><%= helpers.formatPrice(wallet.totalWithdrawn) %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="card p-5">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Products (<%= products.length %>)</h2>
+    <div class="space-y-2">
+      <% products.forEach(product => { %>
+      <a href="/admin/products/<%= product._id %>/edit" class="block p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-800 dark:text-white"><%= helpers.truncate(product.title, 30) %></span>
+          <span class="text-sm font-bold"><%= helpers.formatPrice(product.price) %></span>
+        </div>
+        <div class="flex justify-between items-center mt-1">
+          <span class="text-xs text-gray-400">Stock: <%= product.stockCount %></span>
+          <% if (product.isActive) { %>
+            <span class="badge-success text-xs">Active</span>
+          <% } else { %>
+            <span class="badge-danger text-xs">Inactive</span>
+          <% } %>
+        </div>
+      </a>
+      <% }) %>
+      <% if (products.length === 0) { %>
+      <p class="text-sm text-gray-400 text-center py-4">No products</p>
+      <% } %>
+    </div>
+  </div>
+</div>

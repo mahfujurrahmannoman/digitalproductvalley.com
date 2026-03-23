@@ -1,0 +1,116 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium">My Orders</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = typeof wallet !== 'undefined' ? wallet.balance : 0; const currentPage = 'orders'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <div class="card">
+        <div class="p-4 border-b border-gray-200">
+          <h3 class="font-semibold text-primary-500 text-lg">My Orders</h3>
+        </div>
+
+        <!-- Status Filter & Search -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex flex-wrap gap-2">
+              <a href="/user/orders" class="px-3 py-1.5 rounded text-sm font-medium <%= !currentStatus ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">All</a>
+              <a href="/user/orders?status=pending_payment" class="px-3 py-1.5 rounded text-sm font-medium <%= currentStatus === 'pending_payment' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">Pending</a>
+              <a href="/user/orders?status=processing" class="px-3 py-1.5 rounded text-sm font-medium <%= currentStatus === 'processing' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">Processing</a>
+              <a href="/user/orders?status=delivered" class="px-3 py-1.5 rounded text-sm font-medium <%= currentStatus === 'delivered' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">Delivered</a>
+              <a href="/user/orders?status=cancelled" class="px-3 py-1.5 rounded text-sm font-medium <%= currentStatus === 'cancelled' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">Cancelled</a>
+            </div>
+            <div class="text-sm text-gray-500">
+              Showing <%= pagination.total %> order<%= pagination.total !== 1 ? 's' : '' %>
+            </div>
+          </div>
+        </div>
+
+        <% if (orders.length === 0) { %>
+          <div class="p-12 text-center">
+            <i class="fas fa-shopping-bag text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">No orders found</h3>
+            <p class="text-gray-500 mb-4">
+              <% if (currentStatus) { %>
+                No orders with this status.
+              <% } else { %>
+                You haven't placed any orders yet.
+              <% } %>
+            </p>
+            <a href="/shop" class="btn-primary inline-block">Browse Shop</a>
+          </div>
+        <% } else { %>
+          <div class="table-container" style="border:none;">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th>#ID</th>
+                  <th>Action</th>
+                  <th>Title</th>
+                  <th>Quantity</th>
+                  <th>Promo Code</th>
+                  <th>Discount</th>
+                  <th>Grand Total</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(function(order) { %>
+                  <tr>
+                    <td class="font-medium text-gray-800"><%= order.orderNumber %></td>
+                    <td>
+                      <div class="flex items-center gap-1">
+                        <a href="/user/orders/<%= order._id %>" class="btn-success text-xs py-1 px-2" title="Details">
+                          <i class="fas fa-eye"></i> Details
+                        </a>
+                        <% if (order.status === 'delivered') { %>
+                          <a href="/user/orders/<%= order._id %>" class="bg-primary-500 hover:bg-primary-600 text-white text-xs py-1 px-2 rounded inline-flex items-center" title="Download">
+                            <i class="fas fa-download"></i>
+                          </a>
+                        <% } %>
+                      </div>
+                    </td>
+                    <td class="text-gray-700 text-sm">
+                      <% if (order.items && order.items.length > 0 && order.items[0].product) { %>
+                        <%= helpers.truncate(order.items[0].product.name, 30) %>
+                        <% if (order.items.length > 1) { %>
+                          <span class="text-gray-400">(+<%= order.items.length - 1 %> more)</span>
+                        <% } %>
+                      <% } else { %>
+                        <%= order.items.length %> item<%= order.items.length !== 1 ? 's' : '' %>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <% let totalQty = 0; order.items.forEach(function(i) { totalQty += i.quantity; }); %>
+                      <%= totalQty %>
+                    </td>
+                    <td class="text-center text-gray-500"><%= order.promoCode || '-' %></td>
+                    <td class="text-center"><%= order.discount ? helpers.formatPrice(order.discount) : '-' %></td>
+                    <td class="font-semibold text-gray-800"><%= helpers.formatPrice(order.totalAmount) %></td>
+                    <td class="text-gray-500 text-sm"><%= helpers.formatDate(order.createdAt) %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+
+          <%- include('../partials/pagination') %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

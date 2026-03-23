@@ -1,0 +1,116 @@
+<%
+  var categoryColors = {
+    'facebook': 'bg-blue-600',
+    'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+    'twitter': 'bg-sky-400', 'x': 'bg-black', 'tiktok': 'bg-black',
+    'youtube': 'bg-red-600', 'google': 'bg-red-500', 'gmail': 'bg-red-500',
+    'linkedin': 'bg-blue-700', 'snapchat': 'bg-yellow-400', 'telegram': 'bg-sky-500',
+    'whatsapp': 'bg-green-500', 'discord': 'bg-indigo-500', 'reddit': 'bg-orange-600',
+    'pinterest': 'bg-red-600', 'spotify': 'bg-green-600', 'netflix': 'bg-red-700',
+    'amazon': 'bg-yellow-500', 'microsoft': 'bg-blue-500', 'apple': 'bg-gray-800',
+    'steam': 'bg-gray-700', 'outlook': 'bg-blue-500', 'yahoo': 'bg-purple-600',
+  };
+  function getCategoryColor(n) {
+    if (!n) return 'bg-primary-500';
+    var l = n.toLowerCase(), k = Object.keys(categoryColors);
+    for (var i = 0; i < k.length; i++) { if (l.indexOf(k[i]) !== -1) return categoryColors[k[i]]; }
+    return 'bg-primary-500';
+  }
+  function getCategoryIcon(n) {
+    if (!n) return 'fas fa-globe';
+    var l = n.toLowerCase();
+    if (l.indexOf('facebook') !== -1) return 'fab fa-facebook-f';
+    if (l.indexOf('instagram') !== -1) return 'fab fa-instagram';
+    if (l.indexOf('twitter') !== -1 || l.indexOf('x') !== -1) return 'fab fa-x-twitter';
+    if (l.indexOf('tiktok') !== -1) return 'fab fa-tiktok';
+    if (l.indexOf('youtube') !== -1) return 'fab fa-youtube';
+    if (l.indexOf('google') !== -1 || l.indexOf('gmail') !== -1) return 'fab fa-google';
+    if (l.indexOf('linkedin') !== -1) return 'fab fa-linkedin-in';
+    if (l.indexOf('discord') !== -1) return 'fab fa-discord';
+    if (l.indexOf('telegram') !== -1) return 'fab fa-telegram-plane';
+    return 'fas fa-globe';
+  }
+
+  // Group search results by category
+  var grouped = {};
+  var catOrder = [];
+  if (products && products.length) {
+    products.forEach(function(p) {
+      var catName = (p.category && p.category.name) ? p.category.name : 'Other';
+      var catSlug = (p.category && p.category.slug) ? p.category.slug : 'other';
+      var key = catSlug;
+      if (!grouped[key]) {
+        grouped[key] = { name: catName, slug: catSlug, items: [] };
+        catOrder.push(key);
+      }
+      grouped[key].items.push(p);
+    });
+  }
+%>
+
+<!-- Search Header -->
+<section class="bg-white border-b border-gray-200 py-5">
+  <div class="max-w-7xl mx-auto px-4">
+    <h1 class="text-xl font-bold text-gray-800 mb-3">
+      <% if (searchQuery) { %>
+        Search Results for "<%= searchQuery %>"
+      <% } else { %>
+        Search Products
+      <% } %>
+    </h1>
+    <form action="/shop/search" method="GET" class="max-w-lg">
+      <div class="flex">
+        <input type="text" name="q" value="<%= searchQuery %>" placeholder="Search for accounts..." class="flex-1 input-field rounded-r-none text-sm py-2">
+        <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-5 py-2 rounded-r text-sm font-medium transition-colors">
+          <i class="fas fa-search mr-1"></i> Search
+        </button>
+      </div>
+    </form>
+    <% if (pagination.total > 0) { %>
+      <p class="text-sm text-gray-500 mt-3"><strong><%= pagination.total %></strong> result<%= pagination.total !== 1 ? 's' : '' %> found</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Search Results -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <% if (catOrder.length > 0) { %>
+    <% catOrder.forEach(function(key) {
+      var group = grouped[key];
+    %>
+      <div class="mb-4">
+        <div class="category-header rounded-t">
+          <div class="flex items-center gap-2">
+            <i class="<%= getCategoryIcon(group.name) %> text-base"></i>
+            <a href="/shop/category/<%= group.slug %>" class="text-white hover:text-primary-300 transition-colors"><%= group.name %></a>
+          </div>
+          <div class="hidden sm:flex items-center gap-0">
+            <span class="stock-label w-24 text-center text-xs">In Stock</span>
+            <span class="price-label w-24 text-center text-xs">Price</span>
+            <span class="w-20"></span>
+          </div>
+        </div>
+        <div class="rounded-b overflow-hidden border border-t-0 border-gray-200">
+          <% group.items.forEach(function(product) { %>
+            <%- include('../partials/product-card', { product: product, getCategoryColor: getCategoryColor, getCategoryIcon: getCategoryIcon }) %>
+          <% }); %>
+        </div>
+      </div>
+    <% }); %>
+
+    <%- include('../partials/pagination') %>
+  <% } else { %>
+    <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
+      <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+      <h3 class="text-lg font-semibold text-gray-600 mb-2">No results found</h3>
+      <p class="text-sm text-gray-500 mb-4">
+        <% if (searchQuery) { %>
+          No products matched "<%= searchQuery %>". Try different keywords.
+        <% } else { %>
+          Enter a search term to find products.
+        <% } %>
+      </p>
+      <a href="/shop" class="btn-primary text-sm">Browse All Products</a>
+    </div>
+  <% } %>
+</div>

@@ -1,0 +1,122 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <a href="/admin/support" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Tickets</a>
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2"><%= ticket.ticketNumber %> - <%= ticket.subject %></h1>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Messages Thread -->
+  <div class="lg:col-span-2 space-y-4">
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Conversation</h2>
+      <div class="space-y-4 max-h-[500px] overflow-y-auto">
+        <% ticket.messages.forEach(msg => { %>
+        <div class="flex gap-3 <%= msg.isAdminReply ? 'flex-row-reverse' : '' %>">
+          <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center <%= msg.isAdminReply ? 'bg-primary-100 dark:bg-primary-900/30' : 'bg-gray-100 dark:bg-gray-700' %>">
+            <% if (msg.sender && msg.sender.avatar) { %>
+            <img src="<%= msg.sender.avatar %>" alt="" class="w-8 h-8 rounded-full object-cover">
+            <% } else { %>
+            <i class="fas fa-user text-xs <%= msg.isAdminReply ? 'text-primary-600' : 'text-gray-400' %>"></i>
+            <% } %>
+          </div>
+          <div class="max-w-[75%] <%= msg.isAdminReply ? 'text-right' : '' %>">
+            <div class="<%= msg.isAdminReply ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-100 dark:border-primary-800' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700' %> border rounded-lg p-3">
+              <p class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap"><%= msg.message %></p>
+            </div>
+            <div class="flex items-center gap-2 mt-1 <%= msg.isAdminReply ? 'justify-end' : '' %>">
+              <span class="text-xs text-gray-400"><%= msg.sender ? msg.sender.username : 'Unknown' %></span>
+              <% if (msg.isAdminReply) { %>
+              <span class="text-xs badge-info">Admin</span>
+              <% } %>
+              <span class="text-xs text-gray-400"><%= helpers.formatDateTime(msg.createdAt) %></span>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+        <% if (!ticket.messages || ticket.messages.length === 0) { %>
+        <p class="text-gray-400 text-center py-4">No messages yet</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Reply Form -->
+    <% if (ticket.status !== 'closed') { %>
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Reply</h2>
+      <form method="POST" action="/admin/support/<%= ticket._id %>/reply">
+        <div class="mb-3">
+          <textarea name="message" rows="4" class="input-field" placeholder="Type your reply..." required></textarea>
+        </div>
+        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> Send Reply</button>
+      </form>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Ticket Info -->
+  <div class="space-y-6">
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Ticket Details</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Status</span>
+          <% if (ticket.status === 'open') { %>
+            <span class="badge-warning">Open</span>
+          <% } else if (ticket.status === 'resolved' || ticket.status === 'closed') { %>
+            <span class="badge-success"><%= ticket.status %></span>
+          <% } else { %>
+            <span class="badge-info"><%= ticket.status.replace(/_/g, ' ') %></span>
+          <% } %>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Priority</span>
+          <% if (ticket.priority === 'high') { %>
+            <span class="badge-danger">High</span>
+          <% } else if (ticket.priority === 'medium') { %>
+            <span class="badge-warning">Medium</span>
+          <% } else { %>
+            <span class="badge-info">Low</span>
+          <% } %>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">User</span>
+          <% if (ticket.user) { %>
+          <a href="/admin/users/<%= ticket.user._id %>" class="text-primary-600 hover:underline"><%= ticket.user.username %></a>
+          <% } else { %>
+          <span class="text-gray-400">Deleted</span>
+          <% } %>
+        </div>
+        <% if (ticket.order) { %>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Related Order</span>
+          <a href="/admin/orders/<%= ticket.order._id %>" class="text-primary-600 hover:underline"><%= ticket.order.orderNumber %></a>
+        </div>
+        <% } %>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Created</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= helpers.formatDateTime(ticket.createdAt) %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Last Updated</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= helpers.formatDateTime(ticket.updatedAt) %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Status -->
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Update Status</h2>
+      <form method="POST" action="/admin/support/<%= ticket._id %>/status">
+        <div class="mb-3">
+          <select name="status" class="input-field">
+            <% statuses.forEach(s => { %>
+            <option value="<%= s %>" <%= ticket.status === s ? 'selected' : '' %>><%= s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary w-full">Update Status</button>
+      </form>
+    </div>
+  </div>
+</div>

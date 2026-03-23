@@ -1,0 +1,119 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Payment Settings</h1>
+</div>
+
+<!-- Tabs -->
+<div class="flex border-b dark:border-gray-700 mb-6">
+  <a href="/admin/payments?tab=aamarpay" class="px-4 py-3 text-sm font-medium border-b-2 transition <%= activeTab === 'aamarpay' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
+    <i class="fas fa-mobile-alt mr-1"></i> aamarPay
+  </a>
+  <a href="/admin/payments?tab=plisio" class="px-4 py-3 text-sm font-medium border-b-2 transition <%= activeTab === 'plisio' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
+    <i class="fab fa-bitcoin mr-1"></i> Plisio
+  </a>
+</div>
+
+<!-- aamarPay Settings -->
+<div class="<%= activeTab !== 'aamarpay' ? 'hidden' : '' %>">
+  <div class="card p-6 max-w-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white">aamarPay Configuration</h2>
+      <% if (aamarpay.isEnabled) { %>
+        <span class="badge-success">Enabled</span>
+      <% } else { %>
+        <span class="badge-danger">Disabled</span>
+      <% } %>
+    </div>
+    <form method="POST" action="/admin/payments/aamarpay">
+      <div class="space-y-4">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isEnabled" id="aamarpayEnabled" <%= aamarpay.isEnabled ? 'checked' : '' %> class="w-4 h-4 text-primary-600 rounded">
+          <label for="aamarpayEnabled" class="text-sm text-gray-700 dark:text-gray-300">Enable aamarPay</label>
+        </div>
+
+        <div>
+          <label class="label">Environment</label>
+          <select name="environment" class="input-field">
+            <option value="sandbox" <%= aamarpay.environment === 'sandbox' ? 'selected' : '' %>>Sandbox</option>
+            <option value="live" <%= aamarpay.environment === 'live' ? 'selected' : '' %>>Live</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="label">Store ID</label>
+          <input type="text" name="storeId" value="<%= aamarpay.storeId || '' %>" class="input-field" placeholder="aamarpaytest">
+        </div>
+
+        <div>
+          <label class="label">Signature Key</label>
+          <input type="text" name="signatureKey" value="<%= aamarpay.signatureKey || '' %>" class="input-field" placeholder="dbb74894e82415a2f7ff0ec3a97e4183">
+        </div>
+
+        <div>
+          <label class="label">Exchange Rate (BDT per USD)</label>
+          <input type="number" name="exchangeRate" step="0.01" value="<%= aamarpay.exchangeRate || 120 %>" class="input-field">
+          <p class="text-xs text-gray-400 mt-1">Used to convert USD prices to BDT for aamarPay</p>
+        </div>
+
+        <div>
+          <label class="label">Display Name</label>
+          <input type="text" name="displayName" value="<%= aamarpay.displayName || 'aamarPay' %>" class="input-field">
+        </div>
+
+        <div>
+          <label class="label">Description</label>
+          <input type="text" name="description" value="<%= aamarpay.description || '' %>" class="input-field">
+        </div>
+
+        <div class="pt-4 border-t dark:border-gray-700">
+          <button type="submit" class="btn-primary">Save aamarPay Settings</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Plisio Settings -->
+<div class="<%= activeTab !== 'plisio' ? 'hidden' : '' %>">
+  <div class="card p-6 max-w-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Plisio Configuration</h2>
+      <% if (plisio.isEnabled) { %>
+        <span class="badge-success">Enabled</span>
+      <% } else { %>
+        <span class="badge-danger">Disabled</span>
+      <% } %>
+    </div>
+    <form method="POST" action="/admin/payments/plisio">
+      <div class="space-y-4">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isEnabled" id="plisioEnabled" <%= plisio.isEnabled ? 'checked' : '' %> class="w-4 h-4 text-primary-600 rounded">
+          <label for="plisioEnabled" class="text-sm text-gray-700 dark:text-gray-300">Enable Plisio</label>
+        </div>
+
+        <div>
+          <label class="label">API Key</label>
+          <input type="text" name="apiKey" value="<%= plisio.apiKey || '' %>" class="input-field" placeholder="Your Plisio API key">
+        </div>
+
+        <div>
+          <label class="label">Webhook Secret</label>
+          <input type="text" name="webhookSecret" value="<%= plisio.webhookSecret || '' %>" class="input-field" placeholder="Webhook verification secret">
+        </div>
+
+        <div>
+          <label class="label">Display Name</label>
+          <input type="text" name="displayName" value="<%= plisio.displayName || 'Plisio' %>" class="input-field">
+        </div>
+
+        <div>
+          <label class="label">Description</label>
+          <input type="text" name="description" value="<%= plisio.description || '' %>" class="input-field">
+        </div>
+
+        <div class="pt-4 border-t dark:border-gray-700">
+          <button type="submit" class="btn-primary">Save Plisio Settings</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

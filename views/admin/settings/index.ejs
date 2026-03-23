@@ -1,0 +1,157 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Site Settings</h1>
+</div>
+
+<form method="POST" action="/admin/settings" enctype="multipart/form-data">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- General -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">General Settings</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="label">Site Name</label>
+          <input type="text" name="siteName" value="<%= settings.siteName %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">Site Description</label>
+          <textarea name="siteDescription" rows="2" class="input-field"><%= settings.siteDescription || '' %></textarea>
+        </div>
+        <div>
+          <label class="label">Contact Email</label>
+          <input type="email" name="contactEmail" value="<%= settings.contactEmail || '' %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">Primary Color</label>
+          <div class="flex items-center gap-2">
+            <input type="color" name="primaryColor" value="<%= settings.primaryColor || '#d8842c' %>" class="w-10 h-10 rounded border cursor-pointer">
+            <input type="text" value="<%= settings.primaryColor || '#d8842c' %>" class="input-field flex-1" readonly>
+          </div>
+        </div>
+        <div>
+          <label class="label">Logo</label>
+          <input type="file" name="logo" accept="image/*" class="input-field">
+          <% if (settings.logo) { %>
+          <div class="mt-2"><img src="<%= settings.logo %>" alt="Logo" class="h-10"></div>
+          <% } %>
+        </div>
+        <div>
+          <label class="label">Favicon</label>
+          <input type="file" name="favicon" accept="image/*" class="input-field">
+          <% if (settings.favicon) { %>
+          <div class="mt-2"><img src="<%= settings.favicon %>" alt="Favicon" class="h-8"></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Social Links</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="label"><i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook</label>
+          <input type="url" name="facebook" value="<%= settings.socialLinks ? (settings.socialLinks.facebook || '') : '' %>" class="input-field" placeholder="https://facebook.com/...">
+        </div>
+        <div>
+          <label class="label"><i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter / X</label>
+          <input type="url" name="twitter" value="<%= settings.socialLinks ? (settings.socialLinks.twitter || '') : '' %>" class="input-field" placeholder="https://x.com/...">
+        </div>
+        <div>
+          <label class="label"><i class="fab fa-telegram text-blue-500 mr-1"></i> Telegram</label>
+          <input type="url" name="telegram" value="<%= settings.socialLinks ? (settings.socialLinks.telegram || '') : '' %>" class="input-field" placeholder="https://t.me/...">
+        </div>
+        <div>
+          <label class="label"><i class="fab fa-discord text-indigo-500 mr-1"></i> Discord</label>
+          <input type="url" name="discord" value="<%= settings.socialLinks ? (settings.socialLinks.discord || '') : '' %>" class="input-field" placeholder="https://discord.gg/...">
+        </div>
+      </div>
+    </div>
+
+    <!-- Announcement Bar -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Announcement Bar</h2>
+      <div class="space-y-4">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="announcementActive" id="announcementActive" <%= settings.announcementBar && settings.announcementBar.isActive ? 'checked' : '' %> class="w-4 h-4 text-primary-600 rounded">
+          <label for="announcementActive" class="text-sm text-gray-700 dark:text-gray-300">Show Announcement Bar</label>
+        </div>
+        <div>
+          <label class="label">Announcement Text</label>
+          <input type="text" name="announcementText" value="<%= settings.announcementBar ? (settings.announcementBar.text || '') : '' %>" class="input-field" placeholder="Welcome to AccsZone!">
+        </div>
+      </div>
+    </div>
+
+    <!-- Commerce Settings -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Commerce Settings</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="label">Minimum Deposit Amount ($)</label>
+          <input type="number" name="minDepositAmount" step="0.01" value="<%= settings.minDepositAmount %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">Default Commission Rate (%)</label>
+          <input type="number" name="defaultCommissionRate" step="0.1" value="<%= settings.defaultCommissionRate %>" class="input-field">
+          <p class="text-xs text-gray-400 mt-1">Default commission taken from supplier sales</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="maintenanceMode" id="maintenanceMode" <%= settings.maintenanceMode ? 'checked' : '' %> class="w-4 h-4 text-red-600 rounded">
+          <label for="maintenanceMode" class="text-sm text-red-600 font-medium">Maintenance Mode</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Defaults -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">SEO Defaults</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="label">Default Meta Title</label>
+          <input type="text" name="seoTitle" value="<%= settings.seoDefaults ? (settings.seoDefaults.title || '') : '' %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">Default Meta Description</label>
+          <textarea name="seoDescription" rows="2" class="input-field"><%= settings.seoDefaults ? (settings.seoDefaults.description || '') : '' %></textarea>
+        </div>
+        <div>
+          <label class="label">Default Keywords</label>
+          <input type="text" name="seoKeywords" value="<%= settings.seoDefaults ? (settings.seoDefaults.keywords || '') : '' %>" class="input-field" placeholder="accounts, digital, marketplace">
+        </div>
+      </div>
+    </div>
+
+    <!-- SMTP Settings -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">SMTP / Email Settings</h2>
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="label">SMTP Host</label>
+            <input type="text" name="smtpHost" value="<%= settings.smtpSettings ? (settings.smtpSettings.host || '') : '' %>" class="input-field" placeholder="smtp.gmail.com">
+          </div>
+          <div>
+            <label class="label">SMTP Port</label>
+            <input type="number" name="smtpPort" value="<%= settings.smtpSettings ? (settings.smtpSettings.port || 587) : 587 %>" class="input-field">
+          </div>
+        </div>
+        <div>
+          <label class="label">SMTP User</label>
+          <input type="text" name="smtpUser" value="<%= settings.smtpSettings ? (settings.smtpSettings.user || '') : '' %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">SMTP Password</label>
+          <input type="password" name="smtpPass" value="<%= settings.smtpSettings ? (settings.smtpSettings.pass || '') : '' %>" class="input-field">
+        </div>
+        <div>
+          <label class="label">From Email</label>
+          <input type="email" name="smtpFrom" value="<%= settings.smtpSettings ? (settings.smtpSettings.from || '') : '' %>" class="input-field" placeholder="noreply@accszone.com">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <button type="submit" class="btn-primary"><i class="fas fa-save mr-1"></i> Save All Settings</button>
+  </div>
+</form>

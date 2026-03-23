@@ -1,0 +1,45 @@
+<!-- User Dashboard Sidebar -->
+<div class="user-sidebar">
+  <!-- Balance -->
+  <div class="sidebar-balance">
+    <div>
+      <span class="balance-label">Total Funds:</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="balance-amount"><%= helpers.formatPrice(typeof walletBalance !== 'undefined' ? walletBalance : 0) %></span>
+      <a href="/user/wallet" class="add-btn" title="Add Funds"><i class="fas fa-plus text-sm"></i></a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <a href="/user/dashboard" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'dashboard' ? ' active' : '' %>">
+    <i class="fas fa-home"></i> Home
+  </a>
+  <a href="/user/wallet" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'wallet' ? ' active' : '' %>">
+    <i class="fas fa-coins"></i> Add Funds
+  </a>
+  <a href="/user/orders" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'orders' ? ' active' : '' %>">
+    <i class="fas fa-shopping-cart"></i> My Orders
+  </a>
+  <a href="/support" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'tickets' ? ' active' : '' %>">
+    <i class="fas fa-tag"></i> Tickets
+  </a>
+  <a href="/user/notifications" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'notifications' ? ' active' : '' %>">
+    <i class="fas fa-bell"></i> Notifications
+    <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
+      <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
+    <% } %>
+  </a>
+  <a href="/user/transactions" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'transactions' ? ' active' : '' %>">
+    <i class="fas fa-exchange-alt"></i> Transactions History
+  </a>
+  <a href="/user/api-keys" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'api-keys' ? ' active' : '' %>">
+    <i class="fas fa-code"></i> API Details
+  </a>
+  <a href="/user/profile" class="sidebar-link<%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? ' active' : '' %>">
+    <i class="fas fa-user"></i> Profile
+  </a>
+  <a href="/auth/logout" class="sidebar-link text-red-600 hover:bg-red-50">
+    <i class="fas fa-sign-out-alt"></i> Sign out
+  </a>
+</div>

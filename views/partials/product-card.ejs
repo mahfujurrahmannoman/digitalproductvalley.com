@@ -1,0 +1,78 @@
+<%
+  // Helpers for color/icon if not passed from parent
+  var _categoryColors = {
+    'facebook': 'bg-blue-600',
+    'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+    'twitter': 'bg-sky-400',
+    'x': 'bg-black',
+    'tiktok': 'bg-black',
+    'youtube': 'bg-red-600',
+    'google': 'bg-red-500',
+    'gmail': 'bg-red-500',
+    'linkedin': 'bg-blue-700',
+    'snapchat': 'bg-yellow-400',
+    'telegram': 'bg-sky-500',
+    'whatsapp': 'bg-green-500',
+    'discord': 'bg-indigo-500',
+    'reddit': 'bg-orange-600',
+    'pinterest': 'bg-red-600',
+    'spotify': 'bg-green-600',
+    'netflix': 'bg-red-700',
+    'amazon': 'bg-yellow-500',
+    'microsoft': 'bg-blue-500',
+    'apple': 'bg-gray-800',
+    'steam': 'bg-gray-700',
+    'outlook': 'bg-blue-500',
+    'yahoo': 'bg-purple-600',
+  };
+
+  function _getCatColor(name) {
+    if (typeof getCategoryColor === 'function') return getCategoryColor(name);
+    if (!name) return 'bg-primary-500';
+    var lower = name.toLowerCase();
+    var keys = Object.keys(_categoryColors);
+    for (var i = 0; i < keys.length; i++) {
+      if (lower.indexOf(keys[i]) !== -1) return _categoryColors[keys[i]];
+    }
+    return 'bg-primary-500';
+  }
+
+  function _getCatIcon(name) {
+    if (typeof getCategoryIcon === 'function') return getCategoryIcon(name);
+    if (!name) return 'fas fa-globe';
+    var lower = name.toLowerCase();
+    if (lower.indexOf('facebook') !== -1) return 'fab fa-facebook-f';
+    if (lower.indexOf('instagram') !== -1) return 'fab fa-instagram';
+    if (lower.indexOf('twitter') !== -1 || lower.indexOf('x') !== -1) return 'fab fa-x-twitter';
+    if (lower.indexOf('tiktok') !== -1) return 'fab fa-tiktok';
+    if (lower.indexOf('youtube') !== -1) return 'fab fa-youtube';
+    if (lower.indexOf('google') !== -1 || lower.indexOf('gmail') !== -1) return 'fab fa-google';
+    if (lower.indexOf('linkedin') !== -1) return 'fab fa-linkedin-in';
+    if (lower.indexOf('discord') !== -1) return 'fab fa-discord';
+    if (lower.indexOf('telegram') !== -1) return 'fab fa-telegram-plane';
+    return 'fas fa-globe';
+  }
+
+  var catName = (product.category && product.category.name) ? product.category.name : '';
+%>
+<div class="product-row">
+  <div class="product-icon <%= _getCatColor(catName) %>">
+    <i class="<%= _getCatIcon(catName) %>"></i>
+  </div>
+  <a href="/product/<%= product.slug %>" class="product-title hover:text-primary-500 transition-colors">
+    <%= product.title %>
+  </a>
+  <div class="product-stock hidden sm:block">
+    <% if (product.stockCount > 0) { %>
+      <span class="text-green-600 font-medium"><%= product.stockCount %> pcs.</span>
+    <% } else { %>
+      <span class="text-red-500 font-medium">0 pcs.</span>
+    <% } %>
+  </div>
+  <div class="product-price-type hidden sm:block">Price per pc</div>
+  <div class="product-price">from <%= helpers.formatPrice(product.price) %></div>
+  <a href="/product/<%= product.slug %>" class="btn-buy">
+    <i class="fas fa-shopping-cart text-xs"></i>
+    Buy
+  </a>
+</div>

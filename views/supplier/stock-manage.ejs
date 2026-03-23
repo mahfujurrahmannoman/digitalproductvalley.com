@@ -1,0 +1,38 @@
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Manage Stock</h1>
+  <p class="text-gray-500 dark:text-gray-400 mb-6"><%= product.title %> - <span class="font-medium <%= availableCount > 0 ? 'text-green-600' : 'text-red-600' %>"><%= availableCount %> available</span></p>
+
+  <% if (product.deliveryType === 'manual') { %>
+    <!-- Manual Delivery: Set stock count -->
+    <form action="/supplier/products/<%= product._id %>/stock" method="POST" class="card p-6">
+      <input type="hidden" name="stockType" value="manual">
+      <div class="mb-4">
+        <label class="label">Set Stock Quantity</label>
+        <input type="number" name="manualStockCount" min="0" value="<%= availableCount %>" class="input-field" required>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Set the number of accounts you have available. You will deliver account details manually after each purchase.</p>
+      </div>
+      <button type="submit" class="btn-primary">Update Stock Count</button>
+    </form>
+
+    <div class="card p-4 mt-4">
+      <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2"><i class="fas fa-info-circle text-primary-500 mr-1"></i> How Manual Delivery Works</h3>
+      <ul class="text-xs text-gray-500 dark:text-gray-400 space-y-1.5">
+        <li>1. Set stock count to the number of accounts you have ready</li>
+        <li>2. When a buyer purchases, stock decreases and order goes to "Processing"</li>
+        <li>3. Go to <a href="/supplier/orders" class="text-primary-500 hover:underline">Orders</a> to see pending deliveries</li>
+        <li>4. Enter account details in the order and click "Deliver"</li>
+      </ul>
+    </div>
+  <% } else { %>
+    <!-- Auto Delivery: Add encrypted credentials -->
+    <form action="/supplier/products/<%= product._id %>/stock" method="POST" class="card p-6">
+      <input type="hidden" name="stockType" value="auto">
+      <label class="label">Add Account Stock (one per line)</label>
+      <textarea name="stockData" class="input-field font-mono text-sm" rows="10" required placeholder="email1:password1&#10;email2:password2&#10;email3:password3"></textarea>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Credentials will be encrypted. Format: <code><%= product.accountDetails?.format || 'email:password' %></code></p>
+      <button type="submit" class="btn-primary mt-4">Add Stock</button>
+    </form>
+  <% } %>
+
+  <a href="/supplier/products" class="inline-block mt-4 text-primary-500 hover:text-primary-600">&larr; Back to Products</a>
+</div>

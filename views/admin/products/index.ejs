@@ -1,0 +1,114 @@
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Product Management</h1>
+  <a href="/admin/products/create" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Product</a>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/products" class="flex flex-wrap gap-4 items-end">
+    <div class="flex-1 min-w-[200px]">
+      <label class="label">Search</label>
+      <input type="text" name="search" value="<%= search %>" placeholder="Product title..." class="input-field">
+    </div>
+    <div class="w-48">
+      <label class="label">Category</label>
+      <select name="category" class="input-field">
+        <option value="">All Categories</option>
+        <% categories.forEach(c => { %>
+        <option value="<%= c._id %>" <%= selectedCategory === c._id.toString() ? 'selected' : '' %>><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/products" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Product</th>
+          <th class="p-4 font-medium">Category</th>
+          <th class="p-4 font-medium">Price</th>
+          <th class="p-4 font-medium">Stock</th>
+          <th class="p-4 font-medium">Sold</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% products.forEach(p => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <% if (p.image) { %>
+              <img src="<%= p.image %>" alt="" class="w-10 h-10 rounded object-cover">
+              <% } else { %>
+              <div class="w-10 h-10 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <i class="fas fa-box text-gray-400"></i>
+              </div>
+              <% } %>
+              <div>
+                <a href="/admin/products/<%= p._id %>/edit" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= helpers.truncate(p.title, 40) %></a>
+                <% if (p.supplier) { %>
+                <p class="text-xs text-gray-400">by <%= p.supplier.username %></p>
+                <% } %>
+              </div>
+            </div>
+          </td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= p.category ? p.category.name : 'N/A' %></td>
+          <td class="p-4 font-medium"><%= helpers.formatPrice(p.price) %></td>
+          <td class="p-4">
+            <% if (p.stockCount > 10) { %>
+              <span class="badge-success"><%= p.stockCount %></span>
+            <% } else if (p.stockCount > 0) { %>
+              <span class="badge-warning"><%= p.stockCount %></span>
+            <% } else { %>
+              <span class="badge-danger">0</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-600"><%= p.totalSold %></td>
+          <td class="p-4">
+            <% if (p.isActive) { %>
+              <span class="badge-success">Active</span>
+            <% } else { %>
+              <span class="badge-danger">Inactive</span>
+            <% } %>
+            <% if (p.isFeatured) { %>
+              <span class="badge-info ml-1">Featured</span>
+            <% } %>
+          </td>
+          <td class="p-4">
+            <div class="flex items-center gap-2">
+              <a href="/admin/products/<%= p._id %>/edit" class="btn-secondary text-xs px-2 py-1"><i class="fas fa-edit"></i></a>
+              <form method="POST" action="/admin/products/<%= p._id %>/delete" onsubmit="return confirm('Delete this product?')">
+                <button type="submit" class="btn-danger text-xs px-2 py-1"><i class="fas fa-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (products.length === 0) { %>
+        <tr><td colspan="7" class="p-8 text-center text-gray-400">No products found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/products?page=<%= pagination.page - 1 %>&search=<%= search %>&category=<%= selectedCategory %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/products?page=<%= pagination.page + 1 %>&search=<%= search %>&category=<%= selectedCategory %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

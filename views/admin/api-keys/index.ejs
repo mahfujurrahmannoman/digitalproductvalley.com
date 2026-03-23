@@ -1,0 +1,76 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">API Key Management</h1>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">User</th>
+          <th class="p-4 font-medium">Key Name</th>
+          <th class="p-4 font-medium">API Key</th>
+          <th class="p-4 font-medium">Rate Limit</th>
+          <th class="p-4 font-medium">Last Used</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Created</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% apiKeys.forEach(key => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <% if (key.user) { %>
+            <a href="/admin/users/<%= key.user._id %>" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= key.user.username %></a>
+            <p class="text-xs text-gray-400"><%= key.user.email %></p>
+            <% } else { %>
+            <span class="text-gray-400">Deleted user</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= key.name %></td>
+          <td class="p-4">
+            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono"><%= key.key.substring(0, 12) %>...****</code>
+          </td>
+          <td class="p-4 text-gray-600"><%= key.rateLimit %>/min</td>
+          <td class="p-4 text-gray-500">
+            <%= key.lastUsedAt ? helpers.formatDateTime(key.lastUsedAt) : 'Never' %>
+          </td>
+          <td class="p-4">
+            <% if (key.isActive) { %>
+              <span class="badge-success">Active</span>
+            <% } else { %>
+              <span class="badge-danger">Disabled</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(key.createdAt) %></td>
+          <td class="p-4">
+            <form method="POST" action="/admin/api-keys/<%= key._id %>/toggle">
+              <button type="submit" class="<%= key.isActive ? 'btn-danger' : 'btn-success' %> text-xs px-2 py-1">
+                <%= key.isActive ? 'Disable' : 'Enable' %>
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (apiKeys.length === 0) { %>
+        <tr><td colspan="8" class="p-8 text-center text-gray-400">No API keys found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/api-keys?page=<%= pagination.page - 1 %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/api-keys?page=<%= pagination.page + 1 %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

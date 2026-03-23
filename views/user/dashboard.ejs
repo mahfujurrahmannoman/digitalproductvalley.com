@@ -1,0 +1,134 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium">Dashboard</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = wallet ? wallet.balance : 0; const currentPage = 'dashboard'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <!-- Welcome Banner -->
+      <div class="bg-primary-500 rounded-lg p-6 mb-6 text-white">
+        <h2 class="text-xl font-bold">Hello, <%= user.username.toUpperCase() %>!</h2>
+        <p class="text-white/80 mt-1 text-sm">Welcome to your dashboard. Here's an overview of your account.</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="stat-label">Orders</div>
+          <div class="stat-value"><%= stats.totalOrders %></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-label">Completed Orders</div>
+          <div class="stat-value"><%= stats.completedOrders %></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-label">Pending Orders</div>
+          <div class="stat-value"><%= stats.pendingOrders %></div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="card">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="font-semibold text-gray-800">Recent Orders</h3>
+          <a href="/user/orders" class="text-sm text-primary-500 hover:text-primary-600">View All</a>
+        </div>
+        <% if (recentOrders.length === 0) { %>
+          <div class="p-8 text-center text-gray-500">
+            <i class="fas fa-shopping-bag text-4xl mb-3 opacity-50"></i>
+            <p>No orders yet.</p>
+            <a href="/shop" class="btn-primary inline-block mt-3">Browse Shop</a>
+          </div>
+        <% } else { %>
+          <div class="table-container" style="border:none;">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentOrders.forEach(function(order) { %>
+                  <tr>
+                    <td class="font-medium text-gray-800"><%= order.orderNumber %></td>
+                    <td><%= helpers.formatPrice(order.totalAmount) %></td>
+                    <td>
+                      <% if (order.status === 'delivered') { %>
+                        <span class="badge-success">Delivered</span>
+                      <% } else if (order.status === 'pending_payment') { %>
+                        <span class="badge-warning">Pending</span>
+                      <% } else if (order.status === 'cancelled' || order.status === 'refunded') { %>
+                        <span class="badge-danger"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span>
+                      <% } else { %>
+                        <span class="badge-info"><%= order.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %></span>
+                      <% } %>
+                    </td>
+                    <td class="text-gray-500 text-sm"><%= helpers.formatDate(order.createdAt) %></td>
+                    <td>
+                      <a href="/user/orders/<%= order._id %>" class="text-primary-500 hover:text-primary-600 text-sm font-medium">
+                        Details <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Recent Notifications -->
+      <div class="card mt-6">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="font-semibold text-gray-800">Recent Notifications</h3>
+          <a href="/user/notifications" class="text-sm text-primary-500 hover:text-primary-600">View All</a>
+        </div>
+        <% if (recentNotifications.length === 0) { %>
+          <div class="p-6 text-center text-gray-500">
+            <i class="fas fa-bell text-3xl mb-2 opacity-50"></i>
+            <p class="text-sm">No notifications</p>
+          </div>
+        <% } else { %>
+          <div class="divide-y divide-gray-100">
+            <% recentNotifications.forEach(function(notif) { %>
+              <div class="px-4 py-3 <%= !notif.isRead ? 'bg-orange-50' : '' %>">
+                <% if (notif.link) { %><a href="<%= notif.link %>" class="block"><% } %>
+                  <p class="text-sm font-medium text-gray-800"><%= notif.title %></p>
+                  <p class="text-xs text-gray-500 mt-0.5"><%= helpers.truncate(notif.message, 80) %></p>
+                  <p class="text-xs text-gray-400 mt-0.5"><%= helpers.formatDateTime(notif.createdAt) %></p>
+                <% if (notif.link) { %></a><% } %>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

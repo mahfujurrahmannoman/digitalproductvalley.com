@@ -1,0 +1,97 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Support Tickets</h1>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/support" class="flex flex-wrap gap-4 items-end">
+    <div class="w-48">
+      <label class="label">Status</label>
+      <select name="status" class="input-field">
+        <option value="">All Statuses</option>
+        <% statuses.forEach(s => { %>
+        <option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %></option>
+        <% }) %>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/support" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Tickets Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Ticket #</th>
+          <th class="p-4 font-medium">Subject</th>
+          <th class="p-4 font-medium">User</th>
+          <th class="p-4 font-medium">Priority</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Messages</th>
+          <th class="p-4 font-medium">Updated</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% tickets.forEach(ticket => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <a href="/admin/support/<%= ticket._id %>" class="font-medium text-primary-600 hover:underline"><%= ticket.ticketNumber %></a>
+          </td>
+          <td class="p-4 text-gray-800 dark:text-white"><%= helpers.truncate(ticket.subject, 50) %></td>
+          <td class="p-4">
+            <% if (ticket.user) { %>
+            <a href="/admin/users/<%= ticket.user._id %>" class="text-gray-600 dark:text-gray-400 hover:text-primary-600"><%= ticket.user.username %></a>
+            <% } else { %>
+            <span class="text-gray-400">Deleted</span>
+            <% } %>
+          </td>
+          <td class="p-4">
+            <% if (ticket.priority === 'high') { %>
+              <span class="badge-danger">High</span>
+            <% } else if (ticket.priority === 'medium') { %>
+              <span class="badge-warning">Medium</span>
+            <% } else { %>
+              <span class="badge-info">Low</span>
+            <% } %>
+          </td>
+          <td class="p-4">
+            <% if (ticket.status === 'open') { %>
+              <span class="badge-warning">Open</span>
+            <% } else if (ticket.status === 'resolved' || ticket.status === 'closed') { %>
+              <span class="badge-success"><%= ticket.status %></span>
+            <% } else { %>
+              <span class="badge-info"><%= ticket.status.replace(/_/g, ' ') %></span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= ticket.messages ? ticket.messages.length : 0 %></td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(ticket.updatedAt) %></td>
+          <td class="p-4">
+            <a href="/admin/support/<%= ticket._id %>" class="btn-secondary text-xs px-2 py-1">View</a>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (tickets.length === 0) { %>
+        <tr><td colspan="8" class="p-8 text-center text-gray-400">No tickets found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/support?page=<%= pagination.page - 1 %>&status=<%= status %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/support?page=<%= pagination.page + 1 %>&status=<%= status %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

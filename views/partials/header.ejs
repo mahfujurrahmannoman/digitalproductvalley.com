@@ -1,0 +1,143 @@
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <span class="font-medium text-white"><%= siteSettings.siteName %> - Accounts Store</span>
+      <% if (siteSettings.socialLinks && siteSettings.socialLinks.telegram) { %>
+        <a href="<%= siteSettings.socialLinks.telegram %>" class="flex items-center gap-1"><i class="fab fa-telegram"></i> @<%= siteSettings.siteName.toLowerCase() %></a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Bar -->
+<div class="bg-white border-b border-gray-200 py-2 relative z-[60]">
+  <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/support/new" class="btn-outline-primary text-xs py-1.5 px-3"><i class="fas fa-comment-dots"></i> Ask a Question</a>
+      <% if (!user || user.role === 'customer') { %>
+        <a href="/supplier/apply" class="btn-outline-pink text-xs py-1.5 px-3"><i class="fas fa-user-plus"></i> Become a Supplier</a>
+      <% } %>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a href="/" class="text-gray-700 hover:text-primary-500 transition-colors<%= typeof currentPage !== 'undefined' && currentPage === 'home' ? ' text-primary-500' : '' %>">Home</a>
+      <a href="/blog" class="text-gray-700 hover:text-primary-500 transition-colors">Blogs</a>
+      <a href="/pages/about" class="text-gray-700 hover:text-primary-500 transition-colors">About Us</a>
+      <a href="/pages/api-docs" class="text-gray-700 hover:text-primary-500 transition-colors">API Documentation - Reseller Program</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <% if (user) { %>
+        <div class="relative group">
+          <button class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white rounded-full py-2 px-5 text-sm font-medium transition-colors shadow-sm">
+            <i class="fas fa-user-circle"></i>
+            <span>Dashboard</span>
+            <i class="fas fa-caret-down text-xs opacity-80"></i>
+          </button>
+          <div class="absolute right-0 top-full mt-1 w-52 bg-white rounded-lg shadow-xl border border-gray-200 hidden group-hover:block z-50 overflow-hidden">
+            <div class="px-4 py-2.5 text-sm font-bold text-primary-500 bg-gray-50 border-b border-gray-200">My Account</div>
+            <a href="/user/dashboard" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+              <i class="fas fa-tachometer-alt w-4 text-gray-400"></i> Dashboard
+            </a>
+            <a href="/user/orders" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+              <i class="fas fa-shopping-cart w-4 text-gray-400"></i> My Orders
+            </a>
+            <a href="/user/wallet" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+              <i class="fas fa-credit-card w-4 text-gray-400"></i> Add Funds
+            </a>
+            <a href="/user/tickets" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+              <i class="fas fa-ticket-alt w-4 text-gray-400"></i> Tickets
+            </a>
+            <a href="/user/profile" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+              <i class="fas fa-user w-4 text-gray-400"></i> Profile
+            </a>
+            <% if (user.role === 'supplier') { %>
+              <a href="/supplier/dashboard" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+                <i class="fas fa-store w-4 text-gray-400"></i> Supplier Panel
+              </a>
+            <% } %>
+            <% if (user.role === 'admin') { %>
+              <a href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100 transition-colors">
+                <i class="fas fa-cog w-4 text-gray-400"></i> Admin Panel
+              </a>
+            <% } %>
+            <a href="/auth/logout" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-orange-500 hover:bg-orange-50 font-medium transition-colors">
+              <i class="fas fa-sign-out-alt w-4"></i> Sign out
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+        <a href="/auth/login" class="border border-gray-300 rounded-full py-2 px-5 text-sm text-gray-700 hover:border-primary-500 transition-colors inline-flex items-center gap-2">
+          <i class="fas fa-user-circle text-primary-500"></i> Dashboard
+          <i class="fas fa-caret-down text-xs text-gray-400"></i>
+        </a>
+      <% } %>
+      <!-- Mobile menu toggle -->
+      <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600">
+        <i class="fas fa-bars text-lg"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Logo + Category + Search Bar -->
+<header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+    <!-- Logo -->
+    <a href="/" class="flex-shrink-0">
+      <% if (siteSettings.logo) { %>
+        <img src="<%= siteSettings.logo %>" alt="<%= siteSettings.siteName %>" class="h-10">
+      <% } else { %>
+        <span class="text-2xl font-bold tracking-tight">
+          <span class="text-gray-800">ACCS</span><span class="text-primary-500">Z</span><span class="text-gray-800">ONE</span>
+        </span>
+      <% } %>
+    </a>
+
+    <!-- Category Dropdown -->
+    <div class="hidden md:block relative group">
+      <button class="bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded flex items-center gap-2 text-sm font-medium transition-colors min-w-[180px]">
+        <i class="fas fa-bars"></i>
+        <span>Select a Category</span>
+        <i class="fas fa-caret-down ml-auto"></i>
+      </button>
+      <div class="absolute left-0 top-full w-56 bg-white rounded-b-lg shadow-lg border border-gray-200 hidden group-hover:block z-50 max-h-[70vh] overflow-y-auto">
+        <a href="/shop" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100">
+          <i class="fas fa-th-large w-5 text-gray-400 mr-2"></i> All Accounts
+        </a>
+        <% if (typeof categories !== 'undefined' && categories) { %>
+          <% categories.forEach(function(cat) { %>
+            <a href="/shop/category/<%= cat.slug %>" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 border-b border-gray-100">
+              <% if (cat.icon) { %><i class="<%= cat.icon %> w-5 text-gray-400 mr-2"></i><% } else { %><i class="fas fa-folder w-5 text-gray-400 mr-2"></i><% } %>
+              <%= cat.name %>
+            </a>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Search Bar - Compact -->
+    <div class="flex-1 max-w-lg">
+      <form action="/shop/search" method="GET" class="relative">
+        <input type="text" name="q" placeholder="What are you looking for" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none" value="<%= typeof query !== 'undefined' ? query : '' %>">
+        <button type="submit" class="absolute right-0 top-0 h-full px-3 bg-gray-100 border-l border-gray-300 rounded-r text-gray-500 hover:text-primary-500 hover:bg-gray-200 transition-colors">
+          <i class="fas fa-search text-sm"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Search & Nav -->
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-200 px-4 pb-3">
+    <form action="/shop/search" method="GET" class="mb-3 mt-3">
+      <input type="text" name="q" placeholder="Search products..." class="input-field text-sm" value="<%= typeof query !== 'undefined' ? query : '' %>">
+    </form>
+    <div class="flex flex-wrap gap-2 text-sm">
+      <a href="/" class="px-3 py-1.5 bg-gray-100 rounded text-gray-700 hover:text-primary-500">Home</a>
+      <a href="/shop" class="px-3 py-1.5 bg-gray-100 rounded text-gray-700 hover:text-primary-500">All Accounts</a>
+      <a href="/blog" class="px-3 py-1.5 bg-gray-100 rounded text-gray-700 hover:text-primary-500">Blogs</a>
+      <a href="/pages/about" class="px-3 py-1.5 bg-gray-100 rounded text-gray-700 hover:text-primary-500">About Us</a>
+      <a href="/pages/api-docs" class="px-3 py-1.5 bg-gray-100 rounded text-gray-700 hover:text-primary-500">API Docs</a>
+      <a href="/support/new" class="px-3 py-1.5 bg-primary-50 rounded text-primary-600">Ask a Question</a>
+    </div>
+  </div>
+</header>

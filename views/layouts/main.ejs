@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" class="<%= typeof darkMode !== 'undefined' && darkMode ? 'dark' : '' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %><%= siteSettings.siteName %></title>
+  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : siteSettings.seoDefaults.description || '' %>">
+  <link rel="stylesheet" href="/css/output.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <%- include('../partials/header') %>
+
+  <main class="flex-1">
+    <% if (flash.success && flash.success.length) { %>
+      <div class="max-w-7xl mx-auto px-4 mt-4">
+        <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex justify-between items-center">
+          <span><%= flash.success[0] %></span>
+          <button onclick="this.parentElement.remove()" class="text-green-500 hover:text-green-700">&times;</button>
+        </div>
+      </div>
+    <% } %>
+    <% if (flash.error && flash.error.length) { %>
+      <div class="max-w-7xl mx-auto px-4 mt-4">
+        <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex justify-between items-center">
+          <span><%= flash.error[0] %></span>
+          <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">&times;</button>
+        </div>
+      </div>
+    <% } %>
+
+    <%- body %>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Supplier Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/suppliers" class="flex flex-wrap gap-4 items-end">
+    <div class="w-48">
+      <label class="label">Approval Status</label>
+      <select name="approval" class="input-field">
+        <option value="">All Suppliers</option>
+        <option value="approved" <%= approval === 'approved' ? 'selected' : '' %>>Approved</option>
+        <option value="pending" <%= approval === 'pending' ? 'selected' : '' %>>Pending</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/suppliers" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Suppliers Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Supplier</th>
+          <th class="p-4 font-medium">Company</th>
+          <th class="p-4 font-medium">Commission</th>
+          <th class="p-4 font-medium">Total Sales</th>
+          <th class="p-4 font-medium">Total Earnings</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Joined</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% suppliers.forEach(s => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <a href="/admin/suppliers/<%= s._id %>" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= s.username %></a>
+            <p class="text-xs text-gray-400"><%= s.email %></p>
+          </td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= s.supplierInfo ? (s.supplierInfo.companyName || '-') : '-' %></td>
+          <td class="p-4 text-gray-600"><%= s.supplierInfo ? s.supplierInfo.commissionRate : 10 %>%</td>
+          <td class="p-4 font-medium"><%= helpers.formatPrice(s.supplierInfo ? s.supplierInfo.totalSales : 0) %></td>
+          <td class="p-4 font-medium"><%= helpers.formatPrice(s.supplierInfo ? s.supplierInfo.totalEarnings : 0) %></td>
+          <td class="p-4">
+            <% if (s.supplierInfo && s.supplierInfo.isApproved) { %>
+              <span class="badge-success">Approved</span>
+            <% } else { %>
+              <span class="badge-warning">Pending</span>
+            <% } %>
+            <% if (s.isBanned) { %>
+              <span class="badge-danger ml-1">Banned</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(s.createdAt) %></td>
+          <td class="p-4">
+            <a href="/admin/suppliers/<%= s._id %>" class="btn-secondary text-xs px-2 py-1">View</a>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (suppliers.length === 0) { %>
+        <tr><td colspan="8" class="p-8 text-center text-gray-400">No suppliers found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/suppliers?page=<%= pagination.page - 1 %>&approval=<%= approval %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/suppliers?page=<%= pagination.page + 1 %>&approval=<%= approval %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

@@ -1,0 +1,111 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">User Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/users" class="flex flex-wrap gap-4 items-end">
+    <div class="flex-1 min-w-[200px]">
+      <label class="label">Search</label>
+      <input type="text" name="search" value="<%= search %>" placeholder="Username, email, or name..." class="input-field">
+    </div>
+    <div class="w-40">
+      <label class="label">Role</label>
+      <select name="role" class="input-field">
+        <option value="">All Roles</option>
+        <% roles.forEach(r => { %>
+        <option value="<%= r %>" <%= role === r ? 'selected' : '' %>><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+        <% }) %>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/users" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Users Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">User</th>
+          <th class="p-4 font-medium">Email</th>
+          <th class="p-4 font-medium">Role</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Joined</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% users.forEach(u => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                <span class="text-sm font-medium text-primary-600"><%= u.username.charAt(0).toUpperCase() %></span>
+              </div>
+              <div>
+                <a href="/admin/users/<%= u._id %>" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= u.username %></a>
+                <% if (u.firstName || u.lastName) { %>
+                <p class="text-xs text-gray-400"><%= u.firstName %> <%= u.lastName %></p>
+                <% } %>
+              </div>
+            </div>
+          </td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= u.email %></td>
+          <td class="p-4">
+            <% if (u.role === 'admin') { %>
+              <span class="badge-danger">Admin</span>
+            <% } else if (u.role === 'supplier') { %>
+              <span class="badge-info">Supplier</span>
+            <% } else { %>
+              <span class="badge-success">Customer</span>
+            <% } %>
+          </td>
+          <td class="p-4">
+            <% if (u.isBanned) { %>
+              <span class="badge-danger">Banned</span>
+            <% } else if (u.isActive) { %>
+              <span class="badge-success">Active</span>
+            <% } else { %>
+              <span class="badge-warning">Inactive</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(u.createdAt) %></td>
+          <td class="p-4">
+            <div class="flex items-center gap-2">
+              <a href="/admin/users/<%= u._id %>" class="btn-secondary text-xs px-2 py-1">View</a>
+              <% if (u.role !== 'admin') { %>
+              <form method="POST" action="/admin/users/<%= u._id %>/ban" class="inline">
+                <button type="submit" class="<%= u.isBanned ? 'btn-success' : 'btn-danger' %> text-xs px-2 py-1">
+                  <%= u.isBanned ? 'Unban' : 'Ban' %>
+                </button>
+              </form>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (users.length === 0) { %>
+        <tr><td colspan="6" class="p-8 text-center text-gray-400">No users found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Showing page <%= pagination.page %> of <%= pagination.totalPages %> (<%= pagination.total %> total)</p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/users?page=<%= pagination.page - 1 %>&search=<%= search %>&role=<%= role %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/users?page=<%= pagination.page + 1 %>&search=<%= search %>&role=<%= role %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

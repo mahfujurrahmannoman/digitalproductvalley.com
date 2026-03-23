@@ -1,0 +1,103 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Order Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/orders" class="flex flex-wrap gap-4 items-end">
+    <div class="w-48">
+      <label class="label">Status</label>
+      <select name="status" class="input-field">
+        <option value="">All Statuses</option>
+        <% statuses.forEach(s => { %>
+        <option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div>
+      <label class="label">From</label>
+      <input type="date" name="dateFrom" value="<%= dateFrom %>" class="input-field">
+    </div>
+    <div>
+      <label class="label">To</label>
+      <input type="date" name="dateTo" value="<%= dateTo %>" class="input-field">
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/orders" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Orders Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Order #</th>
+          <th class="p-4 font-medium">Customer</th>
+          <th class="p-4 font-medium">Items</th>
+          <th class="p-4 font-medium">Amount</th>
+          <th class="p-4 font-medium">Payment</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Date</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% orders.forEach(order => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <a href="/admin/orders/<%= order._id %>" class="font-medium text-primary-600 hover:underline"><%= order.orderNumber %></a>
+          </td>
+          <td class="p-4">
+            <% if (order.user) { %>
+            <a href="/admin/users/<%= order.user._id %>" class="text-gray-800 dark:text-gray-200 hover:text-primary-600"><%= order.user.username %></a>
+            <% } else { %>
+            <span class="text-gray-400">Deleted user</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-600"><%= order.items.length %> item(s)</td>
+          <td class="p-4 font-medium"><%= helpers.formatPrice(order.totalAmount) %></td>
+          <td class="p-4">
+            <span class="badge-info"><%= order.paymentMethod || 'N/A' %></span>
+          </td>
+          <td class="p-4">
+            <% if (order.status === 'delivered') { %>
+              <span class="badge-success">Delivered</span>
+            <% } else if (order.status === 'paid' || order.status === 'processing') { %>
+              <span class="badge-warning"><%= order.status %></span>
+            <% } else if (order.status === 'refunded' || order.status === 'cancelled') { %>
+              <span class="badge-danger"><%= order.status %></span>
+            <% } else if (order.status === 'partially_delivered') { %>
+              <span class="badge-info">Partial</span>
+            <% } else { %>
+              <span class="badge-warning"><%= order.status %></span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(order.createdAt) %></td>
+          <td class="p-4">
+            <a href="/admin/orders/<%= order._id %>" class="btn-secondary text-xs px-2 py-1">View</a>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (orders.length === 0) { %>
+        <tr><td colspan="8" class="p-8 text-center text-gray-400">No orders found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/orders?page=<%= pagination.page - 1 %>&status=<%= status %>&dateFrom=<%= dateFrom %>&dateTo=<%= dateTo %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/orders?page=<%= pagination.page + 1 %>&status=<%= status %>&dateFrom=<%= dateFrom %>&dateTo=<%= dateTo %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

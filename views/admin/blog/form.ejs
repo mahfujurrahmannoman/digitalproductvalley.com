@@ -1,0 +1,85 @@
+<div class="mb-6">
+  <a href="/admin/blog" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Blog</a>
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2"><%= post ? 'Edit Post' : 'Create Post' %></h1>
+</div>
+
+<form method="POST" action="<%= post ? '/admin/blog/' + post._id : '/admin/blog' %>" enctype="multipart/form-data">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card p-6">
+        <div class="space-y-4">
+          <div>
+            <label class="label">Title *</label>
+            <input type="text" name="title" value="<%= post ? post.title : '' %>" class="input-field" required>
+          </div>
+
+          <div>
+            <label class="label">Excerpt</label>
+            <textarea name="excerpt" rows="2" class="input-field" placeholder="Brief summary of the post"><%= post ? (post.excerpt || '') : '' %></textarea>
+          </div>
+
+          <div>
+            <label class="label">Content *</label>
+            <textarea name="content" rows="15" class="input-field" required><%= post ? post.content : '' %></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">SEO Settings</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="label">Meta Title</label>
+            <input type="text" name="metaTitle" value="<%= post ? (post.metaTitle || '') : '' %>" class="input-field">
+          </div>
+          <div>
+            <label class="label">Meta Description</label>
+            <textarea name="metaDescription" rows="2" class="input-field"><%= post ? (post.metaDescription || '') : '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Publish</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="label">Status</label>
+            <select name="status" class="input-field">
+              <option value="draft" <%= post && post.status === 'draft' ? 'selected' : '' %>>Draft</option>
+              <option value="published" <%= post && post.status === 'published' ? 'selected' : '' %>>Published</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="label">Category</label>
+            <select name="category" class="input-field">
+              <option value="">Uncategorized</option>
+              <% categories.forEach(c => { %>
+              <option value="<%= c._id %>" <%= post && post.category && post.category.toString() === c._id.toString() ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t dark:border-gray-700">
+            <button type="submit" class="btn-primary flex-1"><%= post ? 'Update' : 'Publish' %></button>
+            <a href="/admin/blog" class="btn-secondary">Cancel</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Featured Image</h2>
+        <input type="file" name="featuredImage" accept="image/*" class="input-field">
+        <% if (post && post.featuredImage) { %>
+        <div class="mt-3">
+          <img src="<%= post.featuredImage %>" alt="" class="w-full rounded object-cover">
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</form>

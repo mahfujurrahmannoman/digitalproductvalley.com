@@ -1,0 +1,135 @@
+<%
+  // Category icon color mapping
+  var categoryColors = {
+    'facebook': 'bg-blue-600',
+    'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+    'twitter': 'bg-sky-400',
+    'x': 'bg-black',
+    'tiktok': 'bg-black',
+    'youtube': 'bg-red-600',
+    'google': 'bg-red-500',
+    'gmail': 'bg-red-500',
+    'linkedin': 'bg-blue-700',
+    'snapchat': 'bg-yellow-400',
+    'telegram': 'bg-sky-500',
+    'whatsapp': 'bg-green-500',
+    'discord': 'bg-indigo-500',
+    'reddit': 'bg-orange-600',
+    'pinterest': 'bg-red-600',
+    'spotify': 'bg-green-600',
+    'netflix': 'bg-red-700',
+    'amazon': 'bg-yellow-500',
+    'microsoft': 'bg-blue-500',
+    'apple': 'bg-gray-800',
+    'steam': 'bg-gray-700',
+    'outlook': 'bg-blue-500',
+    'yahoo': 'bg-purple-600',
+  };
+
+  function getCategoryColor(name) {
+    if (!name) return 'bg-primary-500';
+    var lower = name.toLowerCase();
+    var keys = Object.keys(categoryColors);
+    for (var i = 0; i < keys.length; i++) {
+      if (lower.indexOf(keys[i]) !== -1) return categoryColors[keys[i]];
+    }
+    return 'bg-primary-500';
+  }
+
+  function getCategoryIcon(name) {
+    if (!name) return 'fas fa-globe';
+    var lower = name.toLowerCase();
+    if (lower.indexOf('facebook') !== -1) return 'fab fa-facebook-f';
+    if (lower.indexOf('instagram') !== -1) return 'fab fa-instagram';
+    if (lower.indexOf('twitter') !== -1 || lower.indexOf('x') !== -1) return 'fab fa-x-twitter';
+    if (lower.indexOf('tiktok') !== -1) return 'fab fa-tiktok';
+    if (lower.indexOf('youtube') !== -1) return 'fab fa-youtube';
+    if (lower.indexOf('google') !== -1 || lower.indexOf('gmail') !== -1) return 'fab fa-google';
+    if (lower.indexOf('linkedin') !== -1) return 'fab fa-linkedin-in';
+    if (lower.indexOf('snapchat') !== -1) return 'fab fa-snapchat-ghost';
+    if (lower.indexOf('telegram') !== -1) return 'fab fa-telegram-plane';
+    if (lower.indexOf('whatsapp') !== -1) return 'fab fa-whatsapp';
+    if (lower.indexOf('discord') !== -1) return 'fab fa-discord';
+    if (lower.indexOf('reddit') !== -1) return 'fab fa-reddit-alien';
+    if (lower.indexOf('pinterest') !== -1) return 'fab fa-pinterest-p';
+    if (lower.indexOf('spotify') !== -1) return 'fab fa-spotify';
+    if (lower.indexOf('netflix') !== -1) return 'fas fa-film';
+    if (lower.indexOf('amazon') !== -1) return 'fab fa-amazon';
+    if (lower.indexOf('microsoft') !== -1 || lower.indexOf('outlook') !== -1) return 'fab fa-microsoft';
+    if (lower.indexOf('apple') !== -1) return 'fab fa-apple';
+    if (lower.indexOf('steam') !== -1) return 'fab fa-steam';
+    if (lower.indexOf('yahoo') !== -1) return 'fab fa-yahoo';
+    return 'fas fa-globe';
+  }
+
+  // Group products by category
+  var grouped = {};
+  var categoryOrder = [];
+  if (products && products.length) {
+    products.forEach(function(p) {
+      var catName = (p.category && p.category.name) ? p.category.name : 'Other';
+      var catSlug = (p.category && p.category.slug) ? p.category.slug : 'other';
+      var key = catSlug;
+      if (!grouped[key]) {
+        grouped[key] = { name: catName, slug: catSlug, items: [] };
+        categoryOrder.push(key);
+      }
+      grouped[key].items.push(p);
+    });
+  }
+%>
+
+<!-- Banner / Announcement Area -->
+<section class="relative overflow-hidden" style="background: linear-gradient(135deg, #192340 0%, #1e3a5f 50%, #192340 100%);">
+  <div class="max-w-7xl mx-auto px-4 py-10 md:py-14 text-center relative z-10">
+    <h1 class="text-2xl md:text-3xl font-bold text-white mb-3">Digital Accounts Marketplace</h1>
+    <p class="text-gray-300 text-sm md:text-base mb-6 max-w-xl mx-auto">Buy premium digital accounts instantly. Verified, reliable, and delivered automatically.</p>
+    <form action="/shop/search" method="GET" class="max-w-lg mx-auto">
+      <div class="flex">
+        <input type="text" name="q" placeholder="Search for accounts..." class="flex-1 px-4 py-2.5 text-sm text-gray-800 bg-white rounded-l focus:outline-none">
+        <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-r text-sm font-medium transition-colors">
+          <i class="fas fa-search mr-1"></i> Search
+        </button>
+      </div>
+    </form>
+  </div>
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-1/4 w-64 h-64 bg-primary-500 rounded-full filter blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-48 h-48 bg-blue-500 rounded-full filter blur-3xl"></div>
+  </div>
+</section>
+
+<!-- Products grouped by category -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <% if (categoryOrder.length > 0) { %>
+    <% categoryOrder.forEach(function(key) {
+      var group = grouped[key];
+    %>
+      <!-- Category Section: <%= group.name %> -->
+      <div class="mb-4">
+        <div class="category-header rounded-t">
+          <div class="flex items-center gap-2">
+            <i class="<%= getCategoryIcon(group.name) %> text-base"></i>
+            <span><%= group.name %></span>
+          </div>
+          <div class="hidden sm:flex items-center gap-0">
+            <span class="stock-label w-24 text-center text-xs">In Stock</span>
+            <span class="price-label w-24 text-center text-xs">Price</span>
+            <span class="w-20"></span>
+          </div>
+        </div>
+        <div class="rounded-b overflow-hidden border border-t-0 border-gray-200">
+          <% group.items.forEach(function(product) { %>
+            <%- include('../partials/product-card', { product: product, getCategoryColor: getCategoryColor, getCategoryIcon: getCategoryIcon }) %>
+          <% }); %>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="text-center py-16">
+      <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
+      <h3 class="text-lg font-semibold text-gray-600 mb-2">No products available</h3>
+      <p class="text-sm text-gray-500">Check back later for new products.</p>
+    </div>
+  <% } %>
+</div>

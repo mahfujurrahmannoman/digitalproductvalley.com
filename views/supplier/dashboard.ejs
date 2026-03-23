@@ -1,0 +1,64 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Supplier Dashboard</h1>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Products</p>
+      <p class="text-2xl font-bold text-gray-800 dark:text-gray-200"><%= stats.products %></p>
+    </div>
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Orders</p>
+      <p class="text-2xl font-bold text-gray-800 dark:text-gray-200"><%= stats.orders %></p>
+    </div>
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Balance</p>
+      <p class="text-2xl font-bold text-green-600"><%= helpers.formatPrice(stats.balance) %></p>
+    </div>
+    <div class="card p-4">
+      <p class="text-sm text-gray-500 dark:text-gray-400">Total Earnings</p>
+      <p class="text-2xl font-bold text-primary-500"><%= helpers.formatPrice(stats.totalEarnings) %></p>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <a href="/supplier/products/new" class="card p-4 hover:shadow-md transition-shadow flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center"><i class="fas fa-plus text-primary-500"></i></div>
+      <span class="font-medium text-gray-800 dark:text-gray-200">Add Product</span>
+    </a>
+    <a href="/supplier/earnings" class="card p-4 hover:shadow-md transition-shadow flex items-center gap-3">
+      <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center"><i class="fas fa-dollar-sign text-green-500"></i></div>
+      <span class="font-medium text-gray-800 dark:text-gray-200">View Earnings</span>
+    </a>
+    <a href="/supplier/withdrawals" class="card p-4 hover:shadow-md transition-shadow flex items-center gap-3">
+      <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center"><i class="fas fa-money-bill-wave text-blue-500"></i></div>
+      <span class="font-medium text-gray-800 dark:text-gray-200">Withdraw Funds</span>
+    </a>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="card p-4">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Recent Orders</h2>
+    <% if (recentOrders.length === 0) { %>
+      <p class="text-gray-500 dark:text-gray-400">No orders yet</p>
+    <% } else { %>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <% recentOrders.forEach(o => { %>
+              <tr>
+                <td class="font-mono text-sm"><%= o.orderNumber %></td>
+                <td><%= o.user?.username || 'Unknown' %></td>
+                <td class="font-medium"><%= helpers.formatPrice(o.totalAmount) %></td>
+                <td><span class="badge-<%= o.status === 'delivered' ? 'success' : o.status === 'cancelled' ? 'danger' : 'warning' %>"><%= o.status %></span></td>
+                <td><%= helpers.formatDate(o.createdAt) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>

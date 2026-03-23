@@ -1,0 +1,153 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <a href="/admin/orders" class="text-sm text-gray-500 hover:text-primary-600"><i class="fas fa-arrow-left mr-1"></i> Back to Orders</a>
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white mt-2">Order <%= order.orderNumber %></h1>
+  </div>
+  <div class="flex gap-2">
+    <% if (order.status !== 'refunded' && order.status !== 'cancelled' && order.status !== 'pending_payment') { %>
+    <form method="POST" action="/admin/orders/<%= order._id %>/refund" onsubmit="return confirm('Refund this order? Amount: $<%= order.totalAmount.toFixed(2) %>')">
+      <button type="submit" class="btn-danger"><i class="fas fa-undo mr-1"></i> Refund</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Order Info -->
+  <div class="lg:col-span-2 space-y-6">
+    <!-- Summary -->
+    <div class="card p-5">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <p class="text-sm text-gray-500">Status</p>
+          <% if (order.status === 'delivered') { %>
+            <span class="badge-success mt-1"><%= order.status %></span>
+          <% } else if (order.status === 'refunded' || order.status === 'cancelled') { %>
+            <span class="badge-danger mt-1"><%= order.status %></span>
+          <% } else { %>
+            <span class="badge-warning mt-1"><%= order.status %></span>
+          <% } %>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Total Amount</p>
+          <p class="font-bold text-lg"><%= helpers.formatPrice(order.totalAmount) %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Payment Method</p>
+          <p class="font-medium"><%= order.paymentMethod || 'N/A' %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Order Date</p>
+          <p class="font-medium"><%= helpers.formatDateTime(order.createdAt) %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Order Items</h2>
+      <div class="space-y-4">
+        <% order.items.forEach((item, idx) => { %>
+        <div class="border dark:border-gray-700 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-medium text-gray-800 dark:text-white">
+                <% if (item.product) { %>
+                  <%= item.product.title %>
+                <% } else { %>
+                  <span class="text-gray-400">Deleted Product</span>
+                <% } %>
+              </h3>
+              <p class="text-sm text-gray-500">Qty: <%= item.quantity %> x <%= helpers.formatPrice(item.unitPrice) %> = <%= helpers.formatPrice(item.totalPrice) %></p>
+            </div>
+            <div>
+              <% if (item.isDelivered) { %>
+                <span class="badge-success">Delivered</span>
+              <% } else { %>
+                <span class="badge-warning">Pending</span>
+              <% } %>
+            </div>
+          </div>
+
+          <% if (item.isDelivered && item.deliveredAccounts && item.deliveredAccounts.length > 0) { %>
+          <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded text-xs font-mono">
+            <% item.deliveredAccounts.forEach(acc => { %>
+            <div class="py-0.5"><%= acc %></div>
+            <% }) %>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">Delivered: <%= helpers.formatDateTime(item.deliveredAt) %></p>
+          <% } %>
+
+          <% if (!item.isDelivered && order.status !== 'refunded' && order.status !== 'cancelled' && order.status !== 'pending_payment') { %>
+          <form method="POST" action="/admin/orders/<%= order._id %>/deliver" class="mt-3">
+            <input type="hidden" name="itemId" value="<%= item._id %>">
+            <div class="mb-2">
+              <label class="label text-xs">Delivery Data (one per line)</label>
+              <textarea name="deliveryData" rows="3" class="input-field text-xs font-mono" placeholder="account1@email.com:password&#10;account2@email.com:password"></textarea>
+            </div>
+            <button type="submit" class="btn-success text-xs"><i class="fas fa-paper-plane mr-1"></i> Deliver Item</button>
+          </form>
+          <% } %>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <% if (order.notes) { %>
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Notes</h2>
+      <p class="text-gray-600 dark:text-gray-400"><%= order.notes %></p>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Customer Info -->
+  <div class="space-y-6">
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Customer</h2>
+      <% if (order.user) { %>
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Username</span>
+          <a href="/admin/users/<%= order.user._id %>" class="text-primary-600 hover:underline"><%= order.user.username %></a>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Email</span>
+          <span class="text-gray-800 dark:text-gray-200"><%= order.user.email %></span>
+        </div>
+      </div>
+      <% } else { %>
+      <p class="text-gray-400 text-sm">User deleted</p>
+      <% } %>
+    </div>
+
+    <% if (order.paymentId) { %>
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Payment Details</h2>
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500">Payment ID</span>
+          <span class="text-gray-800 dark:text-gray-200 text-xs font-mono"><%= order.paymentId %></span>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Quick Actions -->
+    <div class="card p-5">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h2>
+      <div class="space-y-2">
+        <% if (order.status === 'paid' || order.status === 'processing') { %>
+        <form method="POST" action="/admin/orders/<%= order._id %>/deliver">
+          <button type="submit" class="btn-success w-full"><i class="fas fa-check mr-1"></i> Mark All Delivered</button>
+        </form>
+        <% } %>
+        <% if (order.status !== 'refunded' && order.status !== 'cancelled' && order.status !== 'pending_payment') { %>
+        <form method="POST" action="/admin/orders/<%= order._id %>/refund" onsubmit="return confirm('Refund this order?')">
+          <button type="submit" class="btn-danger w-full"><i class="fas fa-undo mr-1"></i> Issue Refund</button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

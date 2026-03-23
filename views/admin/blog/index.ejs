@@ -1,0 +1,89 @@
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Blog Management</h1>
+  <a href="/admin/blog/create" class="btn-primary"><i class="fas fa-plus mr-1"></i> New Post</a>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/blog" class="flex flex-wrap gap-4 items-end">
+    <div class="w-48">
+      <label class="label">Status</label>
+      <select name="status" class="input-field">
+        <option value="">All</option>
+        <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Draft</option>
+        <option value="published" <%= status === 'published' ? 'selected' : '' %>>Published</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/blog" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Posts Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Title</th>
+          <th class="p-4 font-medium">Author</th>
+          <th class="p-4 font-medium">Category</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Views</th>
+          <th class="p-4 font-medium">Date</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% posts.forEach(post => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <% if (post.featuredImage) { %>
+              <img src="<%= post.featuredImage %>" alt="" class="w-10 h-10 rounded object-cover">
+              <% } %>
+              <a href="/admin/blog/<%= post._id %>/edit" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= helpers.truncate(post.title, 50) %></a>
+            </div>
+          </td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= post.author ? post.author.username : 'N/A' %></td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= post.category ? post.category.name : 'Uncategorized' %></td>
+          <td class="p-4">
+            <% if (post.status === 'published') { %>
+              <span class="badge-success">Published</span>
+            <% } else { %>
+              <span class="badge-warning">Draft</span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= post.viewCount %></td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(post.publishedAt || post.createdAt) %></td>
+          <td class="p-4">
+            <div class="flex items-center gap-2">
+              <a href="/admin/blog/<%= post._id %>/edit" class="btn-secondary text-xs px-2 py-1"><i class="fas fa-edit"></i></a>
+              <form method="POST" action="/admin/blog/<%= post._id %>/delete" onsubmit="return confirm('Delete this post?')">
+                <button type="submit" class="btn-danger text-xs px-2 py-1"><i class="fas fa-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (posts.length === 0) { %>
+        <tr><td colspan="7" class="p-8 text-center text-gray-400">No blog posts yet</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/blog?page=<%= pagination.page - 1 %>&status=<%= status %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/blog?page=<%= pagination.page + 1 %>&status=<%= status %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

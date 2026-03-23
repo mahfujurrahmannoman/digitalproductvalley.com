@@ -1,0 +1,114 @@
+<%
+  var categoryColors = {
+    'facebook': 'bg-blue-600',
+    'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+    'twitter': 'bg-sky-400', 'x': 'bg-black', 'tiktok': 'bg-black',
+    'youtube': 'bg-red-600', 'google': 'bg-red-500', 'gmail': 'bg-red-500',
+    'linkedin': 'bg-blue-700', 'snapchat': 'bg-yellow-400', 'telegram': 'bg-sky-500',
+    'whatsapp': 'bg-green-500', 'discord': 'bg-indigo-500', 'reddit': 'bg-orange-600',
+    'pinterest': 'bg-red-600', 'spotify': 'bg-green-600', 'netflix': 'bg-red-700',
+    'amazon': 'bg-yellow-500', 'microsoft': 'bg-blue-500', 'apple': 'bg-gray-800',
+    'steam': 'bg-gray-700', 'outlook': 'bg-blue-500', 'yahoo': 'bg-purple-600',
+  };
+  function getCategoryColor(n) {
+    if (!n) return 'bg-primary-500';
+    var l = n.toLowerCase(), k = Object.keys(categoryColors);
+    for (var i = 0; i < k.length; i++) { if (l.indexOf(k[i]) !== -1) return categoryColors[k[i]]; }
+    return 'bg-primary-500';
+  }
+  function getCategoryIcon(n) {
+    if (!n) return 'fas fa-globe';
+    var l = n.toLowerCase();
+    if (l.indexOf('facebook') !== -1) return 'fab fa-facebook-f';
+    if (l.indexOf('instagram') !== -1) return 'fab fa-instagram';
+    if (l.indexOf('twitter') !== -1 || l.indexOf('x') !== -1) return 'fab fa-x-twitter';
+    if (l.indexOf('tiktok') !== -1) return 'fab fa-tiktok';
+    if (l.indexOf('youtube') !== -1) return 'fab fa-youtube';
+    if (l.indexOf('google') !== -1 || l.indexOf('gmail') !== -1) return 'fab fa-google';
+    if (l.indexOf('linkedin') !== -1) return 'fab fa-linkedin-in';
+    if (l.indexOf('discord') !== -1) return 'fab fa-discord';
+    if (l.indexOf('telegram') !== -1) return 'fab fa-telegram-plane';
+    return 'fas fa-globe';
+  }
+%>
+
+<!-- Breadcrumb & Header -->
+<section class="bg-white border-b border-gray-200 py-5">
+  <div class="max-w-7xl mx-auto px-4">
+    <nav class="text-xs text-gray-500 mb-3">
+      <a href="/" class="hover:text-primary-500">Home</a>
+      <span class="mx-1.5">/</span>
+      <a href="/shop" class="hover:text-primary-500">Shop</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-gray-800 font-medium"><%= category.name %></span>
+    </nav>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="product-icon <%= getCategoryColor(category.name) %> w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg flex-shrink-0">
+          <i class="<%= getCategoryIcon(category.name) %>"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-gray-800"><%= category.name %></h1>
+          <p class="text-sm text-gray-500"><%= pagination.total %> products available</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <select onchange="window.location.href='?page=1&sort=' + this.value + '<%= filters.minPrice ? '&minPrice=' + filters.minPrice : '' %><%= filters.maxPrice ? '&maxPrice=' + filters.maxPrice : '' %><%= filters.region ? '&region=' + encodeURIComponent(filters.region) : '' %><%= filters.verification ? '&verification=' + encodeURIComponent(filters.verification) : '' %>'" class="input-field text-sm w-auto py-2">
+          <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest</option>
+          <option value="price-low" <%= currentSort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+          <option value="price-high" <%= currentSort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+          <option value="popular" <%= currentSort === 'popular' ? 'selected' : '' %>>Most Popular</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products Table -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <% if (products.length > 0) { %>
+    <div class="mb-4">
+      <div class="category-header rounded-t">
+        <div class="flex items-center gap-2">
+          <i class="<%= getCategoryIcon(category.name) %> text-base"></i>
+          <span><%= category.name %></span>
+        </div>
+        <div class="hidden sm:flex items-center gap-0">
+          <span class="stock-label w-24 text-center text-xs">In Stock</span>
+          <span class="price-label w-24 text-center text-xs">Price</span>
+          <span class="w-20"></span>
+        </div>
+      </div>
+      <div class="rounded-b overflow-hidden border border-t-0 border-gray-200">
+        <% products.forEach(function(product) { %>
+          <%- include('../partials/product-card', { product: product, getCategoryColor: getCategoryColor, getCategoryIcon: getCategoryIcon }) %>
+        <% }); %>
+      </div>
+    </div>
+
+    <%- include('../partials/pagination') %>
+  <% } else { %>
+    <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
+      <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
+      <h3 class="text-lg font-semibold text-gray-600 mb-2">No products found</h3>
+      <p class="text-sm text-gray-500 mb-4">Try adjusting your filters or browse other categories.</p>
+      <a href="/shop/category/<%= category.slug %>" class="btn-secondary text-sm">Clear Filters</a>
+    </div>
+  <% } %>
+
+  <!-- Other Categories -->
+  <% if (categories && categories.length > 1) { %>
+    <div class="mt-8">
+      <h3 class="text-sm font-semibold text-gray-600 mb-3">Browse Other Categories</h3>
+      <div class="flex flex-wrap gap-2">
+        <% categories.forEach(function(cat) { %>
+          <% if (cat.slug !== category.slug) { %>
+            <a href="/shop/category/<%= cat.slug %>" class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+              <%= cat.name %>
+            </a>
+          <% } %>
+        <% }); %>
+      </div>
+    </div>
+  <% } %>
+</div>

@@ -1,0 +1,52 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Withdrawals</h1>
+
+  <div class="card p-4 mb-6">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Available Balance</p>
+    <p class="text-2xl font-bold text-green-600 mb-4"><%= helpers.formatPrice(wallet.balance) %></p>
+
+    <form action="/supplier/withdrawals" method="POST" class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="label">Amount (USD)</label>
+          <input type="number" name="amount" class="input-field" step="0.01" min="1" max="<%= wallet.balance %>" required>
+        </div>
+        <div>
+          <label class="label">Payment Method</label>
+          <select name="paymentMethod" class="input-field" required>
+            <option value="bkash">bKash</option>
+            <option value="bank">Bank Transfer</option>
+            <option value="crypto">Crypto Wallet</option>
+          </select>
+        </div>
+        <div>
+          <label class="label">Account / Address</label>
+          <input type="text" name="paymentDetails" class="input-field" required placeholder="Your payment details">
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Request Withdrawal</button>
+    </form>
+  </div>
+
+  <% if (withdrawals.length > 0) { %>
+    <div class="card p-4">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Withdrawal History</h2>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Note</th></tr></thead>
+          <tbody>
+            <% withdrawals.forEach(w => { %>
+              <tr>
+                <td class="font-medium"><%= helpers.formatPrice(w.amount) %></td>
+                <td><%= w.paymentMethod %></td>
+                <td><span class="badge-<%= w.status === 'completed' ? 'success' : w.status === 'rejected' ? 'danger' : 'warning' %>"><%= w.status %></span></td>
+                <td><%= helpers.formatDate(w.createdAt) %></td>
+                <td><%= w.adminNote || '-' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+</div>

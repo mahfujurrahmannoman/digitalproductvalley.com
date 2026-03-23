@@ -1,0 +1,113 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Withdrawal Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="card p-4 mb-6">
+  <form method="GET" action="/admin/withdrawals" class="flex flex-wrap gap-4 items-end">
+    <div class="w-48">
+      <label class="label">Status</label>
+      <select name="status" class="input-field">
+        <option value="">All Statuses</option>
+        <% statuses.forEach(s => { %>
+        <option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+        <% }) %>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Filter</button>
+    <a href="/admin/withdrawals" class="btn-secondary">Reset</a>
+  </form>
+</div>
+
+<!-- Withdrawals Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <th class="p-4 font-medium">Supplier</th>
+          <th class="p-4 font-medium">Amount</th>
+          <th class="p-4 font-medium">Method</th>
+          <th class="p-4 font-medium">Status</th>
+          <th class="p-4 font-medium">Requested</th>
+          <th class="p-4 font-medium">Processed</th>
+          <th class="p-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-gray-700">
+        <% withdrawals.forEach(w => { %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="p-4">
+            <% if (w.supplier) { %>
+            <a href="/admin/users/<%= w.supplier._id %>" class="font-medium text-gray-800 dark:text-white hover:text-primary-600"><%= w.supplier.username %></a>
+            <p class="text-xs text-gray-400"><%= w.supplier.email %></p>
+            <% } else { %>
+            <span class="text-gray-400">Deleted</span>
+            <% } %>
+          </td>
+          <td class="p-4 font-bold text-gray-800 dark:text-white"><%= helpers.formatPrice(w.amount) %></td>
+          <td class="p-4 text-gray-600 dark:text-gray-400"><%= w.paymentMethod %></td>
+          <td class="p-4">
+            <% if (w.status === 'pending') { %>
+              <span class="badge-warning">Pending</span>
+            <% } else if (w.status === 'approved' || w.status === 'completed') { %>
+              <span class="badge-success"><%= w.status %></span>
+            <% } else { %>
+              <span class="badge-danger"><%= w.status %></span>
+            <% } %>
+          </td>
+          <td class="p-4 text-gray-500"><%= helpers.formatDate(w.createdAt) %></td>
+          <td class="p-4 text-gray-500">
+            <% if (w.processedAt) { %>
+              <%= helpers.formatDate(w.processedAt) %>
+              <% if (w.processedBy) { %>
+              <p class="text-xs text-gray-400">by <%= w.processedBy.username %></p>
+              <% } %>
+            <% } else { %>
+              -
+            <% } %>
+          </td>
+          <td class="p-4">
+            <% if (w.status === 'pending') { %>
+            <div class="flex items-center gap-2">
+              <form method="POST" action="/admin/withdrawals/<%= w._id %>/approve" class="inline">
+                <button type="submit" class="btn-success text-xs px-2 py-1" onclick="return confirm('Approve this withdrawal?')">
+                  <i class="fas fa-check mr-1"></i> Approve
+                </button>
+              </form>
+              <form method="POST" action="/admin/withdrawals/<%= w._id %>/reject" class="inline">
+                <input type="hidden" name="adminNote" value="Rejected by admin">
+                <button type="submit" class="btn-danger text-xs px-2 py-1" onclick="return confirm('Reject this withdrawal?')">
+                  <i class="fas fa-times mr-1"></i> Reject
+                </button>
+              </form>
+            </div>
+            <% } else { %>
+              <% if (w.adminNote) { %>
+              <span class="text-xs text-gray-400" title="<%= w.adminNote %>"><i class="fas fa-comment"></i></span>
+              <% } %>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (withdrawals.length === 0) { %>
+        <tr><td colspan="7" class="p-8 text-center text-gray-400">No withdrawal requests</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <div class="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Page <%= pagination.page %> of <%= pagination.totalPages %></p>
+    <div class="flex gap-2">
+      <% if (pagination.hasPrev) { %>
+      <a href="/admin/withdrawals?page=<%= pagination.page - 1 %>&status=<%= status %>" class="btn-secondary text-sm">Previous</a>
+      <% } %>
+      <% if (pagination.hasNext) { %>
+      <a href="/admin/withdrawals?page=<%= pagination.page + 1 %>&status=<%= status %>" class="btn-primary text-sm">Next</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

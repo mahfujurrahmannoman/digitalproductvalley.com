@@ -1,0 +1,24 @@
+<% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+<nav class="flex items-center justify-center gap-1 mt-6">
+  <% if (pagination.hasPrev) { %>
+    <a href="?page=<%= pagination.page - 1 %><%= typeof queryString !== 'undefined' ? queryString : '' %>"
+       class="px-3 py-1.5 text-sm bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+      <i class="fas fa-chevron-left text-xs mr-1"></i> Previous
+    </a>
+  <% } %>
+
+  <% for (var i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
+    <a href="?page=<%= i %><%= typeof queryString !== 'undefined' ? queryString : '' %>"
+       class="px-3 py-1.5 text-sm rounded transition-colors <%= i === pagination.page ? 'bg-primary-500 text-white font-medium' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+      <%= i %>
+    </a>
+  <% } %>
+
+  <% if (pagination.hasNext) { %>
+    <a href="?page=<%= pagination.page + 1 %><%= typeof queryString !== 'undefined' ? queryString : '' %>"
+       class="px-3 py-1.5 text-sm bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+      Next <i class="fas fa-chevron-right text-xs ml-1"></i>
+    </a>
+  <% } %>
+</nav>
+<% } %>

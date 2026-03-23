@@ -1,0 +1,168 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <a href="/user/orders" class="hover:text-primary-500">My Orders</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium">Order <%= order.orderNumber %></span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = 0; const currentPage = 'orders'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <div class="card">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="font-semibold text-primary-500 text-lg">Order <%= order.orderNumber %></h3>
+          <div class="flex items-center gap-2">
+            <% if (order.status === 'delivered') { %>
+              <span class="badge-success">Delivered</span>
+            <% } else if (order.status === 'pending_payment') { %>
+              <span class="badge-warning">Pending Payment</span>
+            <% } else if (order.status === 'cancelled' || order.status === 'refunded') { %>
+              <span class="badge-danger"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span>
+            <% } else if (order.status === 'disputed') { %>
+              <span class="badge-danger">Disputed</span>
+            <% } else { %>
+              <span class="badge-info"><%= order.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %></span>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="p-4 border-b border-gray-200 bg-gray-50">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span class="text-gray-500 block">Order Number</span>
+              <span class="font-semibold text-gray-800"><%= order.orderNumber %></span>
+            </div>
+            <div>
+              <span class="text-gray-500 block">Date</span>
+              <span class="font-semibold text-gray-800"><%= helpers.formatDateTime(order.createdAt) %></span>
+            </div>
+            <div>
+              <span class="text-gray-500 block">Payment Method</span>
+              <span class="font-semibold text-gray-800 capitalize"><%= order.paymentMethod || 'N/A' %></span>
+            </div>
+            <div>
+              <span class="text-gray-500 block">Grand Total</span>
+              <span class="font-bold text-primary-500 text-lg"><%= helpers.formatPrice(order.totalAmount) %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="p-4">
+          <h4 class="font-semibold text-gray-800 mb-3">Order Items</h4>
+          <div class="table-container">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                  <th>Delivery</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% order.items.forEach(function(item, index) { %>
+                  <tr>
+                    <td class="font-medium text-gray-800">
+                      <% if (item.product) { %>
+                        <%= item.product.name %>
+                      <% } else { %>
+                        <span class="text-gray-400">[Deleted Product]</span>
+                      <% } %>
+                    </td>
+                    <td class="text-center"><%= item.quantity %></td>
+                    <td><%= helpers.formatPrice(item.unitPrice) %></td>
+                    <td class="font-semibold"><%= helpers.formatPrice(item.totalPrice) %></td>
+                    <td class="capitalize"><%= item.deliveryType %></td>
+                    <td>
+                      <% if (item.isDelivered) { %>
+                        <span class="badge-success">Delivered</span>
+                      <% } else { %>
+                        <span class="badge-warning">Pending</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Delivered Accounts -->
+        <% order.items.forEach(function(item, index) { %>
+          <% if (item.isDelivered && item.deliveredAccounts && item.deliveredAccounts.length > 0) { %>
+            <div class="p-4 border-t border-gray-200">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-semibold text-gray-800">
+                  <i class="fas fa-key text-primary-500 mr-1"></i>
+                  Delivered Accounts
+                  <% if (item.product) { %>- <%= item.product.name %><% } %>
+                  (<%= item.deliveredAccounts.length %>)
+                </h4>
+                <button
+                  onclick="copyAccounts(this, <%= index %>)"
+                  class="btn-primary text-xs py-1.5 px-3"
+                >
+                  <i class="fas fa-copy mr-1"></i> Copy All
+                </button>
+              </div>
+              <div id="accounts-<%= index %>" class="bg-gray-50 rounded-lg p-3 max-h-64 overflow-y-auto space-y-1">
+                <% item.deliveredAccounts.forEach(function(account) { %>
+                  <div class="text-sm font-mono bg-white px-3 py-2 rounded border border-gray-200 text-gray-700 break-all">
+                    <%= account %>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
+        <% }); %>
+
+        <% if (order.notes) { %>
+          <div class="p-4 border-t border-gray-200">
+            <h4 class="font-semibold text-gray-800 mb-2">Notes</h4>
+            <p class="text-sm text-gray-600"><%= order.notes %></p>
+          </div>
+        <% } %>
+
+        <!-- Actions -->
+        <div class="p-4 border-t border-gray-200 flex items-center gap-3">
+          <a href="/user/orders" class="btn-secondary text-sm">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Orders
+          </a>
+          <a href="/support/new?order=<%= order._id %>" class="btn-primary text-sm">
+            <i class="fas fa-headset mr-1"></i> Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function copyAccounts(btn, index) {
+    const container = document.getElementById('accounts-' + index);
+    const accounts = Array.from(container.querySelectorAll('.font-mono')).map(el => el.textContent.trim());
+    const text = accounts.join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+      const original = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+      setTimeout(function() { btn.innerHTML = original; }, 2000);
+    });
+  }
+</script>

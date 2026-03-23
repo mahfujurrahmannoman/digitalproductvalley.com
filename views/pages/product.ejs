@@ -1,0 +1,406 @@
+<!-- Dark Navy Banner -->
+<section class="bg-gradient-to-r from-[#1a1f3d] to-[#2a2f5d] py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <nav class="text-sm text-gray-300 mb-3">
+      <a href="/" class="hover:text-white">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/shop" class="hover:text-white">Shop</a>
+      <% if (product.category) { %>
+        <span class="mx-2">/</span>
+        <a href="/shop/category/<%= product.category.slug %>" class="hover:text-white"><%= product.category.name %></a>
+      <% } %>
+    </nav>
+    <h1 class="text-2xl md:text-3xl font-bold text-white">
+      <% if (product.category) { %>
+        <i class="<%= product.category.icon || 'fas fa-folder' %> mr-2 text-orange-400"></i>
+      <% } %>
+      <%= product.category ? product.category.name : 'Product' %>
+    </h1>
+  </div>
+</section>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col lg:flex-row gap-8 justify-center">
+
+    <!-- Main Content - Buy Card -->
+    <div class="w-full" style="max-width: 720px;">
+
+      <!-- Product Title Card -->
+      <div class="bg-white rounded-t-lg shadow-sm border border-gray-200 border-b-0 p-5">
+        <h2 class="text-xl md:text-2xl font-bold text-gray-800"><%= product.title %></h2>
+        <% if (product.shortDescription) { %>
+          <p class="text-sm text-gray-500 mt-2"><%= product.shortDescription %></p>
+        <% } %>
+      </div>
+
+      <!-- Orange Price Bar -->
+      <div class="bg-orange-500 text-white px-5 py-3 font-semibold text-base flex items-center shadow-sm">
+        <i class="fas fa-tag mr-2"></i>
+        Price for 1 Piece: <%= helpers.formatPrice(product.price) %>
+      </div>
+
+      <!-- Purchase Form Card -->
+      <div class="bg-white rounded-b-lg shadow-sm border border-gray-200 border-t-0 p-5">
+        <% if (product.stockCount > 0) { %>
+          <form action="/order/create" method="POST" id="buyForm">
+            <input type="hidden" name="productId" value="<%= product._id %>">
+            <input type="hidden" name="quantity" id="hiddenQuantity" value="<%= product.minQuantity %>">
+
+            <!-- Stock & Quantity Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-5">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-600">Stock:</span>
+                <% if (product.stockCount > 5) { %>
+                  <span class="bg-green-100 text-green-700 text-sm font-bold px-2.5 py-0.5 rounded"><%= product.stockCount %></span>
+                <% } else { %>
+                  <span class="bg-yellow-100 text-yellow-700 text-sm font-bold px-2.5 py-0.5 rounded"><%= product.stockCount %></span>
+                <% } %>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-600">Quantity:</span>
+                <div class="flex items-center">
+                  <button type="button" onclick="changeQty(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded-l text-sm font-bold transition-colors">-</button>
+                  <input type="number" id="quantity" value="<%= product.minQuantity %>" min="<%= product.minQuantity %>" max="<%= Math.min(product.maxQuantity, product.stockCount) %>" class="border-gray-300 border-y text-center w-16 py-1.5 text-sm outline-none focus:border-orange-400" onchange="updateTotal()" onkeyup="updateTotal()">
+                  <button type="button" onclick="changeQty(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded-r text-sm font-bold transition-colors">+</button>
+                </div>
+                <span class="text-xs text-gray-400">(Min: <%= product.minQuantity %>, Max: <%= Math.min(product.maxQuantity, product.stockCount) %>)</span>
+              </div>
+            </div>
+
+            <!-- Promo Code Toggle -->
+            <div class="mb-5">
+              <button type="button" onclick="togglePromo()" class="text-sm text-orange-500 hover:text-orange-600 font-medium flex items-center gap-1">
+                <i class="fas fa-chevron-right text-xs transition-transform" id="promoArrow"></i>
+                Have a promo code?
+              </button>
+              <div id="promoBox" class="hidden mt-2">
+                <div class="flex gap-2">
+                  <input type="text" name="promoCode" placeholder="Enter promo code" class="input-field text-sm py-1.5 flex-1">
+                  <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm px-4 py-1.5 rounded font-medium transition-colors">Apply</button>
+                </div>
+              </div>
+            </div>
+
+            <hr class="border-gray-200 mb-4">
+
+            <!-- Totals -->
+            <div class="space-y-2 mb-5">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Sub Total:</span>
+                <span class="font-semibold text-gray-800" id="subTotal"><%= helpers.formatPrice(product.price * product.minQuantity) %></span>
+              </div>
+              <div class="flex items-center justify-between text-base">
+                <span class="font-bold text-gray-800">Grand Total:</span>
+                <span class="font-bold text-orange-500 text-xl" id="grandTotal"><%= helpers.formatPrice(product.price * product.minQuantity) %></span>
+              </div>
+            </div>
+
+            <!-- Newsletter Checkbox -->
+            <div class="flex items-center gap-2 mb-5">
+              <input type="checkbox" id="newsletter" name="newsletter" class="rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+              <label for="newsletter" class="text-sm text-gray-500">Subscribe to E-mail newsletter</label>
+            </div>
+
+            <!-- Buy / Login Button -->
+            <% if (user) { %>
+              <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-6 rounded-lg text-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                <i class="fas fa-shopping-cart"></i> Buy Now
+              </button>
+            <% } else { %>
+              <a href="/auth/login" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-6 rounded-lg text-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 no-underline">
+                <i class="fas fa-sign-in-alt"></i> Login to Buy
+              </a>
+            <% } %>
+          </form>
+        <% } else { %>
+          <div class="text-center py-8">
+            <i class="fas fa-box-open text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500 font-semibold text-lg">Out of Stock</p>
+            <p class="text-sm text-gray-400 mt-1">This product is currently unavailable. Please check back later.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Trust Badges - Always show for ALL products -->
+      <div class="grid grid-cols-3 gap-3 mt-4">
+        <div class="bg-white rounded-lg border border-gray-200 p-3 text-center shadow-sm">
+          <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-bolt text-green-600"></i>
+          </div>
+          <p class="text-xs font-bold text-gray-800">Instant Delivery</p>
+          <p class="text-[10px] text-gray-400 mt-0.5">Delivered after payment</p>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-3 text-center shadow-sm">
+          <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-shield-alt text-blue-600"></i>
+          </div>
+          <p class="text-xs font-bold text-gray-800">Secure Payment</p>
+          <p class="text-[10px] text-gray-400 mt-0.5">100% safe & encrypted</p>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-3 text-center shadow-sm">
+          <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-headset text-purple-600"></i>
+          </div>
+          <p class="text-xs font-bold text-gray-800">24/7 Support</p>
+          <p class="text-[10px] text-gray-400 mt-0.5">Always here to help</p>
+        </div>
+      </div>
+
+      <!-- Product Description Section - Professional -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-[#1a1f3d] to-[#2a2f5d] px-5 py-3">
+          <h3 class="text-white font-bold text-base flex items-center gap-2">
+            <i class="fas fa-info-circle text-orange-400"></i> Product Description
+          </h3>
+        </div>
+        <div class="p-5">
+          <% if (product.shortDescription) { %>
+            <p class="text-sm text-gray-600 mb-4 leading-relaxed"><%= product.shortDescription %></p>
+          <% } %>
+
+          <% if (product.description) { %>
+            <div class="space-y-0">
+              <% product.description.split('\n').filter(function(line) { return line.trim() !== ''; }).forEach(function(line) { %>
+                <div class="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
+                  <div class="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fas fa-check text-orange-500 text-[10px]"></i>
+                  </div>
+                  <span class="text-sm text-gray-700 leading-relaxed"><%= line.trim() %></span>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Account Details Section - Professional -->
+      <% if (product.accountDetails) { %>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 overflow-hidden">
+        <div class="bg-gradient-to-r from-[#1a1f3d] to-[#2a2f5d] px-5 py-3">
+          <h3 class="text-white font-bold text-base flex items-center gap-2">
+            <i class="fas fa-user-circle text-orange-400"></i> Account Details
+          </h3>
+        </div>
+        <div class="p-0">
+          <table class="w-full text-sm">
+            <tbody>
+              <% if (product.accountDetails.region) { %>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-globe mr-2 text-orange-400"></i>Region</td>
+                  <td class="py-3.5 px-5 text-gray-800 font-medium"><%= product.accountDetails.region %></td>
+                </tr>
+              <% } %>
+              <% if (product.accountDetails.accountAge) { %>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-calendar mr-2 text-orange-400"></i>Account Age</td>
+                  <td class="py-3.5 px-5 text-gray-800 font-medium"><%= product.accountDetails.accountAge %></td>
+                </tr>
+              <% } %>
+              <% if (product.accountDetails.verification) { %>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-check-circle mr-2 text-orange-400"></i>Verification</td>
+                  <td class="py-3.5 px-5 text-gray-800 font-medium"><%= product.accountDetails.verification %></td>
+                </tr>
+              <% } %>
+              <% if (product.accountDetails.format) { %>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-file-alt mr-2 text-orange-400"></i>Format</td>
+                  <td class="py-3.5 px-5 text-gray-800"><code class="bg-orange-50 text-orange-700 px-2 py-1 rounded text-xs font-mono"><%= product.accountDetails.format %></code></td>
+                </tr>
+              <% } %>
+              <% if (product.accountDetails.features && product.accountDetails.features.length > 0) { %>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-star mr-2 text-orange-400"></i>Features</td>
+                  <td class="py-3.5 px-5">
+                    <div class="flex flex-wrap gap-1.5">
+                      <% product.accountDetails.features.forEach(function(feature) { %>
+                        <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-xs font-medium border border-green-200">
+                          <i class="fas fa-check text-[9px]"></i> <%= feature %>
+                        </span>
+                      <% }); %>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+              <% if (product.accountDetails.customFields && product.accountDetails.customFields.length > 0) { %>
+                <% product.accountDetails.customFields.forEach(function(field) { %>
+                  <tr class="border-b border-gray-100">
+                    <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><%= field.label %></td>
+                    <td class="py-3.5 px-5 text-gray-800 font-medium"><%= field.value %></td>
+                  </tr>
+                <% }); %>
+              <% } %>
+              <!-- Always show delivery & support info -->
+              <tr class="border-b border-gray-100">
+                <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-truck mr-2 text-orange-400"></i>Delivery</td>
+                <td class="py-3.5 px-5">
+                  <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-xs font-medium border border-green-200">
+                    <i class="fas fa-bolt text-[9px]"></i> Instant Delivery
+                  </span>
+                </td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-shield-alt mr-2 text-orange-400"></i>Guarantee</td>
+                <td class="py-3.5 px-5">
+                  <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-200">
+                    <i class="fas fa-check-double text-[9px]"></i> Replacement Guarantee
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-gray-600 bg-gray-50 w-40"><i class="fas fa-headset mr-2 text-orange-400"></i>Support</td>
+                <td class="py-3.5 px-5">
+                  <span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full text-xs font-medium border border-purple-200">
+                    <i class="fas fa-clock text-[9px]"></i> 24/7 Customer Support
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Why Choose Us Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 overflow-hidden">
+        <div class="bg-gradient-to-r from-[#1a1f3d] to-[#2a2f5d] px-5 py-3">
+          <h3 class="text-white font-bold text-base flex items-center gap-2">
+            <i class="fas fa-award text-orange-400"></i> Why Choose Us
+          </h3>
+        </div>
+        <div class="p-5">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-bolt text-orange-500 text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">Fast Delivery</p>
+                <p class="text-[11px] text-gray-500 mt-0.5">Accounts delivered instantly after confirmed payment</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-check-double text-green-500 text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">Quality Verified</p>
+                <p class="text-[11px] text-gray-500 mt-0.5">All accounts tested and verified before delivery</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lock text-blue-500 text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">Secure Payment</p>
+                <p class="text-[11px] text-gray-500 mt-0.5">Multiple payment methods with full encryption</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-sync-alt text-purple-500 text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">Replacement Policy</p>
+                <p class="text-[11px] text-gray-500 mt-0.5">Free replacement if account has issues</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end main column -->
+
+  </div><!-- end flex row -->
+</div>
+
+<!-- Related Products -->
+<% if (typeof relatedProducts !== 'undefined' && relatedProducts && relatedProducts.length > 0) { %>
+<div class="max-w-7xl mx-auto px-4 pb-12">
+  <div class="w-full" style="max-width: 720px; margin: 0 auto;">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-[#1a1f3d] to-[#2a2f5d] px-5 py-3">
+        <h3 class="text-white font-bold text-base flex items-center gap-2">
+          <i class="fas fa-th-list text-orange-400"></i> Related Products
+        </h3>
+      </div>
+      <div class="divide-y divide-gray-100">
+        <% relatedProducts.forEach(function(p) { %>
+          <%
+            var _catName = (p.category && p.category.name) ? p.category.name : '';
+            var _color = 'bg-primary-500';
+            var _icon = 'fas fa-globe';
+            var _lower = _catName.toLowerCase();
+            if (_lower.indexOf('facebook') !== -1) { _color = 'bg-blue-600'; _icon = 'fab fa-facebook-f'; }
+            else if (_lower.indexOf('instagram') !== -1) { _color = 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400'; _icon = 'fab fa-instagram'; }
+            else if (_lower.indexOf('twitter') !== -1) { _color = 'bg-sky-400'; _icon = 'fab fa-x-twitter'; }
+            else if (_lower.indexOf('youtube') !== -1) { _color = 'bg-red-600'; _icon = 'fab fa-youtube'; }
+            else if (_lower.indexOf('google') !== -1 || _lower.indexOf('gmail') !== -1) { _color = 'bg-red-500'; _icon = 'fab fa-google'; }
+            else if (_lower.indexOf('linkedin') !== -1) { _color = 'bg-blue-700'; _icon = 'fab fa-linkedin-in'; }
+          %>
+          <a href="/product/<%= p.slug %>" class="flex items-center gap-4 px-5 py-3.5 hover:bg-orange-50 transition-colors group">
+            <div class="w-9 h-9 rounded-lg <%= _color %> flex items-center justify-center flex-shrink-0">
+              <i class="<%= _icon %> text-white text-sm"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-800 group-hover:text-orange-600 transition-colors truncate"><%= p.title %></p>
+            </div>
+            <div class="flex items-center gap-4 flex-shrink-0">
+              <span class="text-xs font-medium text-green-600"><%= p.stockCount %> pcs.</span>
+              <span class="text-sm font-bold text-gray-800">from <%= helpers.formatPrice(p.price) %></span>
+              <span class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors">
+                <i class="fas fa-shopping-cart text-[10px]"></i> Buy
+              </span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<script>
+  const unitPrice = <%= product.price %>;
+  const minQty = <%= product.minQuantity %>;
+  const maxQty = <%= Math.min(product.maxQuantity, product.stockCount || 1) %>;
+
+  function changeQty(delta) {
+    const input = document.getElementById('quantity');
+    if (!input) return;
+    let val = parseInt(input.value) + delta;
+    if (val < minQty) val = minQty;
+    if (val > maxQty) val = maxQty;
+    input.value = val;
+    updateTotal();
+  }
+
+  function updateTotal() {
+    const input = document.getElementById('quantity');
+    if (!input) return;
+    let qty = parseInt(input.value);
+    if (isNaN(qty) || qty < minQty) qty = minQty;
+    if (qty > maxQty) qty = maxQty;
+    input.value = qty;
+    const hidden = document.getElementById('hiddenQuantity');
+    if (hidden) hidden.value = qty;
+    const total = (unitPrice * qty).toFixed(2);
+    const subEl = document.getElementById('subTotal');
+    const grandEl = document.getElementById('grandTotal');
+    if (subEl) subEl.textContent = '$' + total;
+    if (grandEl) grandEl.textContent = '$' + total;
+  }
+
+  function togglePromo() {
+    const box = document.getElementById('promoBox');
+    const arrow = document.getElementById('promoArrow');
+    if (!box) return;
+    box.classList.toggle('hidden');
+    if (arrow) {
+      arrow.style.transform = box.classList.contains('hidden') ? '' : 'rotate(90deg)';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() { updateTotal(); });
+</script>

@@ -1,0 +1,129 @@
+<%
+  var categoryColors = {
+    'facebook': 'bg-blue-600',
+    'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+    'twitter': 'bg-sky-400', 'x': 'bg-black', 'tiktok': 'bg-black',
+    'youtube': 'bg-red-600', 'google': 'bg-red-500', 'gmail': 'bg-red-500',
+    'linkedin': 'bg-blue-700', 'snapchat': 'bg-yellow-400', 'telegram': 'bg-sky-500',
+    'whatsapp': 'bg-green-500', 'discord': 'bg-indigo-500', 'reddit': 'bg-orange-600',
+    'pinterest': 'bg-red-600', 'spotify': 'bg-green-600', 'netflix': 'bg-red-700',
+    'amazon': 'bg-yellow-500', 'microsoft': 'bg-blue-500', 'apple': 'bg-gray-800',
+    'steam': 'bg-gray-700', 'outlook': 'bg-blue-500', 'yahoo': 'bg-purple-600',
+  };
+  function getCategoryColor(n) {
+    if (!n) return 'bg-primary-500';
+    var l = n.toLowerCase(), k = Object.keys(categoryColors);
+    for (var i = 0; i < k.length; i++) { if (l.indexOf(k[i]) !== -1) return categoryColors[k[i]]; }
+    return 'bg-primary-500';
+  }
+  function getCategoryIcon(n) {
+    if (!n) return 'fas fa-globe';
+    var l = n.toLowerCase();
+    if (l.indexOf('facebook') !== -1) return 'fab fa-facebook-f';
+    if (l.indexOf('instagram') !== -1) return 'fab fa-instagram';
+    if (l.indexOf('twitter') !== -1 || l.indexOf('x') !== -1) return 'fab fa-x-twitter';
+    if (l.indexOf('tiktok') !== -1) return 'fab fa-tiktok';
+    if (l.indexOf('youtube') !== -1) return 'fab fa-youtube';
+    if (l.indexOf('google') !== -1 || l.indexOf('gmail') !== -1) return 'fab fa-google';
+    if (l.indexOf('linkedin') !== -1) return 'fab fa-linkedin-in';
+    if (l.indexOf('discord') !== -1) return 'fab fa-discord';
+    if (l.indexOf('telegram') !== -1) return 'fab fa-telegram-plane';
+    return 'fas fa-globe';
+  }
+
+  // Group products by category
+  var grouped = {};
+  var catOrder = [];
+  if (products && products.length) {
+    products.forEach(function(p) {
+      var catName = (p.category && p.category.name) ? p.category.name : 'Other';
+      var catSlug = (p.category && p.category.slug) ? p.category.slug : 'other';
+      var key = catSlug;
+      if (!grouped[key]) {
+        grouped[key] = { name: catName, slug: catSlug, items: [] };
+        catOrder.push(key);
+      }
+      grouped[key].items.push(p);
+    });
+  }
+%>
+
+<!-- Shop Header -->
+<section class="bg-white border-b border-gray-200 py-5">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-gray-800">All Accounts</h1>
+        <p class="text-sm text-gray-500 mt-0.5">Showing <strong><%= pagination.total %></strong> products</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <form action="/shop/search" method="GET" class="flex">
+          <input type="text" name="q" placeholder="Search products..." class="input-field rounded-r-none text-sm py-2 w-48">
+          <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-r text-sm transition-colors">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        <select onchange="window.location.href='?page=1&sort=' + this.value + '<%= currentCategory ? '&category=' + currentCategory : '' %>'" class="input-field text-sm w-auto py-2">
+          <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest</option>
+          <option value="price-low" <%= currentSort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+          <option value="price-high" <%= currentSort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+          <option value="popular" <%= currentSort === 'popular' ? 'selected' : '' %>>Most Popular</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category Chips -->
+<% if (categories && categories.length > 0) { %>
+<section class="bg-white border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 py-3">
+    <div class="flex flex-wrap gap-2">
+      <a href="/shop" class="px-3 py-1 rounded text-xs font-medium transition-colors <%= !currentCategory ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+        All
+      </a>
+      <% categories.forEach(function(cat) { %>
+        <a href="/shop?category=<%= cat.slug %>" class="px-3 py-1 rounded text-xs font-medium transition-colors <%= currentCategory === cat.slug ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+          <%= cat.name %>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- Products Table Rows -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <% if (catOrder.length > 0) { %>
+    <% catOrder.forEach(function(key) {
+      var group = grouped[key];
+    %>
+      <div class="mb-4">
+        <div class="category-header rounded-t">
+          <div class="flex items-center gap-2">
+            <i class="<%= getCategoryIcon(group.name) %> text-base"></i>
+            <a href="/shop/category/<%= group.slug %>" class="text-white hover:text-primary-300 transition-colors"><%= group.name %></a>
+          </div>
+          <div class="hidden sm:flex items-center gap-0">
+            <span class="stock-label w-24 text-center text-xs">In Stock</span>
+            <span class="price-label w-24 text-center text-xs">Price</span>
+            <span class="w-20"></span>
+          </div>
+        </div>
+        <div class="rounded-b overflow-hidden border border-t-0 border-gray-200">
+          <% group.items.forEach(function(product) { %>
+            <%- include('../partials/product-card', { product: product, getCategoryColor: getCategoryColor, getCategoryIcon: getCategoryIcon }) %>
+          <% }); %>
+        </div>
+      </div>
+    <% }); %>
+
+    <%- include('../partials/pagination') %>
+  <% } else { %>
+    <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
+      <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
+      <h3 class="text-lg font-semibold text-gray-600 mb-2">No products found</h3>
+      <p class="text-sm text-gray-500">Check back later for new products.</p>
+    </div>
+  <% } %>
+</div>

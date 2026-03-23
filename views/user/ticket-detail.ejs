@@ -1,0 +1,108 @@
+<!-- Breadcrumb -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="/" class="hover:text-primary-500">Home</a>
+    <span class="mx-1">/</span>
+    <a href="/support" class="hover:text-primary-500">Tickets</a>
+    <span class="mx-1">/</span>
+    <span class="text-gray-700 font-medium"><%= ticket.ticketNumber %></span>
+  </nav>
+  <h1 class="text-2xl font-bold text-gray-800">Hello, <span class="text-primary-500"><%= user.username.toUpperCase() %></span></h1>
+</div>
+
+<!-- 2-Column Layout -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Left Sidebar -->
+    <div class="col-span-1">
+      <% const walletBalance = 0; const currentPage = 'tickets'; %>
+      <%- include('../partials/user-sidebar') %>
+    </div>
+
+    <!-- Right Content -->
+    <div class="lg:col-span-3">
+      <div class="card">
+        <!-- Ticket Header -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs font-mono text-gray-500"><%= ticket.ticketNumber %></span>
+              <h3 class="font-semibold text-primary-500 text-lg"><%= ticket.subject %></h3>
+            </div>
+            <div>
+              <% if (ticket.status === 'resolved' || ticket.status === 'closed') { %>
+                <span class="badge-success"><%= ticket.status === 'resolved' ? 'Resolved' : 'Closed' %></span>
+              <% } else if (ticket.status === 'open') { %>
+                <span class="badge-warning">Open</span>
+              <% } else { %>
+                <span class="badge-info"><%= ticket.status.replace(/_/g, ' ') %></span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversation -->
+        <div class="p-4 space-y-4 max-h-[600px] overflow-y-auto">
+          <% ticket.messages.forEach(function(msg) { %>
+            <div class="p-4 rounded-lg <%= msg.isAdminReply ? 'bg-blue-50 border-l-4 border-primary-500' : 'bg-gray-50' %>">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-gray-800 text-sm">
+                    <%= msg.sender ? msg.sender.username : 'Unknown' %>
+                  </span>
+                  <% if (msg.isAdminReply) { %>
+                    <span class="badge-info text-xs">Staff</span>
+                  <% } %>
+                </div>
+                <span class="text-xs text-gray-500"><%= helpers.formatDateTime(msg.createdAt) %></span>
+              </div>
+              <p class="text-sm text-gray-700 whitespace-pre-wrap"><%= msg.message %></p>
+              <% if (msg.attachments && msg.attachments.length) { %>
+                <div class="flex gap-2 mt-3">
+                  <% msg.attachments.forEach(function(a) { %>
+                    <a href="<%= a %>" target="_blank" class="block">
+                      <img src="<%= a %>" class="w-16 h-16 object-cover rounded border border-gray-200 hover:opacity-80 transition-opacity" alt="Attachment">
+                    </a>
+                  <% }); %>
+                </div>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+
+        <!-- Reply Form -->
+        <% if (ticket.status !== 'closed') { %>
+          <div class="p-4 border-t border-gray-200">
+            <form action="/support/<%= ticket._id %>/reply" method="POST" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label class="label">Your Reply</label>
+                <textarea name="message" class="input-field" rows="4" required placeholder="Type your reply..."></textarea>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
+                    <i class="fas fa-paperclip mr-1"></i> Attach images
+                    <input type="file" name="attachments" class="hidden" multiple accept="image/*">
+                  </label>
+                </div>
+                <button type="submit" class="btn-primary">
+                  <i class="fas fa-paper-plane mr-1"></i> Send Reply
+                </button>
+              </div>
+            </form>
+          </div>
+        <% } else { %>
+          <div class="p-4 border-t border-gray-200 text-center text-gray-500 text-sm">
+            This ticket is closed. <a href="/support/new" class="text-primary-500 hover:text-primary-600">Open a new ticket</a> if you need further assistance.
+          </div>
+        <% } %>
+      </div>
+
+      <div class="mt-4">
+        <a href="/support" class="text-primary-500 hover:text-primary-600 text-sm">
+          <i class="fas fa-arrow-left mr-1"></i> Back to Tickets
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
