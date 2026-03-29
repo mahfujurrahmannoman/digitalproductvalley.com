@@ -22,7 +22,7 @@ const siteSettingsSchema = new mongoose.Schema({
   defaultCommissionRate: { type: Number, default: 10 },
   maintenanceMode: { type: Boolean, default: false },
   seoDefaults: {
-    title: { type: String, default: 'DigitalProductValley - Premium Digital Products Marketplace' },
+    title: { type: String, default: 'DigitalProductValley - Buy Verified Accounts & Digital Products Instantly' },
     description: String,
     keywords: String,
   },
