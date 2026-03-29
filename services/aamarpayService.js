@@ -21,7 +21,7 @@ const initiatePayment = async ({ transactionId, amount, customerName, customerEm
     tran_id: transactionId,
     amount: amountBDT,
     currency: 'BDT',
-    desc: 'AccsZone Wallet Deposit',
+    desc: 'DigitalProductValley Wallet Deposit',
     cus_name: customerName || 'Customer',
     cus_email: customerEmail,
     cus_phone: customerPhone || '01700000000',

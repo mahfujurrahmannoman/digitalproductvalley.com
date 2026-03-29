@@ -164,7 +164,7 @@ const postRegister = async (req, res) => {
     // Set session
     req.session.userId = user._id;
 
-    req.flash('success', 'Account created successfully! Welcome to AccsZone.');
+    req.flash('success', 'Account created successfully! Welcome to DigitalProductValley.');
     res.redirect('/user/dashboard');
   } catch (err) {
     console.error('Register error:', err);

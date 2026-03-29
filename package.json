@@ -1,7 +1,7 @@
 {
-  "name": "accszone",
+  "name": "digitalproductvalley",
   "version": "1.0.0",
-  "description": "Digital accounts marketplace with admin panel",
+  "description": "Premium digital products marketplace with admin panel",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

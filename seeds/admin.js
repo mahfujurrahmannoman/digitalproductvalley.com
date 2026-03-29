@@ -14,14 +14,14 @@ async function seed() {
   if (!existingAdmin) {
     const admin = await User.create({
       username: 'admin',
-      email: 'admin@accszone.com',
+      email: 'admin@digitalproductvalley.com',
       password: 'admin123',
       role: 'admin',
       firstName: 'Admin',
       isEmailVerified: true,
     });
     await Wallet.create({ user: admin._id });
-    console.log('Admin user created: admin@accszone.com / admin123');
+    console.log('Admin user created: admin@digitalproductvalley.com / admin123');
   } else {
     console.log('Admin user already exists');
   }

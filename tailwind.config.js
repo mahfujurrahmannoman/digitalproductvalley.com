@@ -11,7 +11,7 @@ module.exports = {
           200: '#fcd9af',
           300: '#f9be7c',
           400: '#f5a04a',
-          500: '#E8922F', // AccsZone orange
+          500: '#E8922F', // DigitalProductValley orange
           600: '#d07a1a',
           700: '#ad6118',
           800: '#8a4e1a',

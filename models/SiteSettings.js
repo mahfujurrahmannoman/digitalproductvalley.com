@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const siteSettingsSchema = new mongoose.Schema({
   key: { type: String, unique: true, default: 'main' },
-  siteName: { type: String, default: 'AccsZone' },
-  siteDescription: { type: String, default: 'Digital Accounts Marketplace' },
+  siteName: { type: String, default: 'DigitalProductValley' },
+  siteDescription: { type: String, default: 'Premium Digital Products Marketplace' },
   logo: String,
   favicon: String,
   primaryColor: { type: String, default: '#d8842c' },
@@ -22,7 +22,7 @@ const siteSettingsSchema = new mongoose.Schema({
   defaultCommissionRate: { type: Number, default: 10 },
   maintenanceMode: { type: Boolean, default: false },
   seoDefaults: {
-    title: { type: String, default: 'AccsZone - Digital Accounts Marketplace' },
+    title: { type: String, default: 'DigitalProductValley - Premium Digital Products Marketplace' },
     description: String,
     keywords: String,
   },

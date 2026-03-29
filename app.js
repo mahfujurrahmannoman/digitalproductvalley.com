@@ -108,5 +108,5 @@ require('./jobs/cron');
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`AccsZone running on http://localhost:${PORT}`);
+  console.log(`DigitalProductValley running on http://localhost:${PORT}`);
 });
