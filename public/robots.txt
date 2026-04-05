@@ -1,0 +1,26 @@
+# robots.txt for DigitalProductValley
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /product/
+Allow: /shop/category/
+Allow: /blog
+Allow: /blog/
+Allow: /pages/about
+Allow: /pages/terms
+Allow: /pages/privacy
+Allow: /pages/api-docs
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /user/
+Disallow: /auth/
+Disallow: /order/
+Disallow: /payment/
+Disallow: /supplier/
+Disallow: /support/
+Disallow: /api/
+Disallow: /shop/search
+
+# Sitemap
+Sitemap: https://digitalproductvalley.com/sitemap.xml

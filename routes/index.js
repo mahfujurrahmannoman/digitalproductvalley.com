@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { getOrganizationSchema, getWebSiteSchema, getBaseUrl } = require('../middleware/seo');
 
 // GET / - Homepage
 router.get('/', async (req, res, next) => {
@@ -14,9 +15,19 @@ router.get('/', async (req, res, next) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    const baseUrl = getBaseUrl();
+    const siteSettings = res.locals.siteSettings;
+
     res.render('pages/home', {
       layout: 'layouts/main',
-      title: 'Home',
+      title: siteSettings.seoDefaults.title || 'Buy Verified Accounts & Digital Products Instantly',
+      metaDescription: siteSettings.seoDefaults.description || 'DigitalProductValley is a trusted marketplace to buy verified accounts and digital products. Instant delivery, secure transactions, and 24/7 support.',
+      keywords: 'buy verified accounts, digital products, instant delivery, verified social media accounts, bulk accounts, digital marketplace',
+      canonicalUrl: baseUrl + '/',
+      structuredData: [
+        getOrganizationSchema(siteSettings, baseUrl),
+        getWebSiteSchema(siteSettings, baseUrl),
+      ],
       currentPage: 'home',
       categories,
       products,
@@ -31,6 +42,7 @@ router.get('/pages/about', (req, res) => {
   res.render('pages/static/about', {
     layout: 'layouts/main',
     title: 'About Us',
+    metaDescription: 'Learn about DigitalProductValley - a trusted marketplace for verified accounts and digital products with instant delivery and secure transactions.',
   });
 });
 
@@ -39,6 +51,7 @@ router.get('/pages/terms', (req, res) => {
   res.render('pages/static/terms', {
     layout: 'layouts/main',
     title: 'Terms of Service',
+    metaDescription: 'Read the Terms of Service for DigitalProductValley. Understand our policies on purchases, refunds, account usage, and marketplace rules.',
   });
 });
 
@@ -47,6 +60,7 @@ router.get('/pages/privacy', (req, res) => {
   res.render('pages/static/privacy', {
     layout: 'layouts/main',
     title: 'Privacy Policy',
+    metaDescription: 'DigitalProductValley Privacy Policy. Learn how we collect, use, and protect your personal information and data.',
   });
 });
 
@@ -55,6 +69,7 @@ router.get('/pages/api-docs', (req, res) => {
   res.render('pages/static/api-docs', {
     layout: 'layouts/main',
     title: 'API Documentation',
+    metaDescription: 'DigitalProductValley API documentation for resellers. Integrate our products into your platform with our RESTful API.',
   });
 });
 

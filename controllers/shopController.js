@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { paginate } = require('../utils/helpers');
 const { ITEMS_PER_PAGE } = require('../config/constants');
+const { getProductSchema, getBreadcrumbSchema, getBaseUrl } = require('../middleware/seo');
 
 // GET /shop - Shop page with all products
 exports.shopPage = async (req, res, next) => {
@@ -41,9 +42,17 @@ exports.shopPage = async (req, res, next) => {
 
     const queryString = '&sort=' + sort + (categorySlug ? '&category=' + categorySlug : '');
 
+    const baseUrl = getBaseUrl();
     res.render('pages/shop', {
       layout: 'layouts/main',
-      title: 'Shop',
+      title: 'Shop - Buy Verified Accounts & Digital Products',
+      metaDescription: 'Browse our collection of verified accounts and digital products. Instant delivery, competitive prices, and secure transactions at DigitalProductValley.',
+      keywords: 'buy accounts, verified accounts, digital products, social media accounts, instant delivery',
+      canonicalUrl: baseUrl + '/shop',
+      structuredData: getBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'Shop', url: '/shop' },
+      ], baseUrl),
       products,
       categories,
       pagination,
@@ -128,6 +137,8 @@ exports.searchProducts = async (req, res, next) => {
     res.render('pages/search', {
       layout: 'layouts/main',
       title: query ? 'Search: ' + query : 'Search',
+      metaDescription: query ? 'Search results for "' + query + '" at DigitalProductValley. Find verified accounts and digital products.' : 'Search for verified accounts and digital products at DigitalProductValley.',
+      noindex: true,
       products,
       categories,
       pagination,
@@ -163,9 +174,30 @@ exports.productDetail = async (req, res, next) => {
       .limit(4)
       .lean();
 
+    const baseUrl = getBaseUrl();
+    const productDesc = product.shortDescription || product.description || '';
+    const metaDesc = productDesc.length > 160 ? productDesc.substring(0, 157) + '...' : productDesc;
+    const productImage = product.image ? (product.image.startsWith('http') ? product.image : baseUrl + product.image) : '';
+
     res.render('pages/product', {
       layout: 'layouts/main',
       title: product.title,
+      metaDescription: metaDesc,
+      keywords: product.title + ', buy ' + product.title + ', ' + (product.category ? product.category.name : '') + ', verified accounts',
+      canonicalUrl: baseUrl + '/product/' + product.slug,
+      ogType: 'product',
+      ogTitle: product.title + ' - ' + res.locals.siteSettings.siteName,
+      ogDescription: metaDesc,
+      ogImage: productImage,
+      structuredData: [
+        getProductSchema(product, baseUrl),
+        getBreadcrumbSchema([
+          { name: 'Home', url: '/' },
+          { name: 'Shop', url: '/shop' },
+          ...(product.category ? [{ name: product.category.name, url: '/shop/category/' + product.category.slug }] : []),
+          { name: product.title },
+        ], baseUrl),
+      ],
       product,
       relatedProducts,
     });
@@ -233,9 +265,20 @@ exports.categoryPage = async (req, res, next) => {
     if (region) queryString += '&region=' + encodeURIComponent(region);
     if (verification) queryString += '&verification=' + encodeURIComponent(verification);
 
+    const baseUrl = getBaseUrl();
+    const catDesc = category.description || 'Browse ' + category.name + ' products at DigitalProductValley. Instant delivery and secure transactions.';
+
     res.render('pages/category', {
       layout: 'layouts/main',
-      title: category.name,
+      title: 'Buy ' + category.name + ' - Verified Accounts',
+      metaDescription: catDesc.length > 160 ? catDesc.substring(0, 157) + '...' : catDesc,
+      keywords: category.name + ', buy ' + category.name + ', ' + category.name + ' accounts, verified ' + category.name,
+      canonicalUrl: baseUrl + '/shop/category/' + category.slug,
+      structuredData: getBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'Shop', url: '/shop' },
+        { name: category.name },
+      ], baseUrl),
       category,
       products,
       categories,

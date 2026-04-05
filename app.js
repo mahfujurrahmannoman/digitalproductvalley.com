@@ -11,6 +11,7 @@ const User = require('./models/User');
 const SiteSettings = require('./models/SiteSettings');
 const notificationService = require('./services/notificationService');
 const { formatPrice, formatDate, formatDateTime, truncate } = require('./utils/helpers');
+const { seoMiddleware, generateSitemap, getBaseUrl } = require('./middleware/seo');
 
 const expressLayouts = require('express-ejs-layouts');
 
@@ -68,12 +69,37 @@ app.use(async (req, res, next) => {
     res.locals.notificationCount = req.user ? await notificationService.getUnreadCount(req.user._id) : 0;
     res.locals.helpers = { formatPrice, formatDate, formatDateTime, truncate };
     res.locals.currentPath = req.path;
+    // SEO defaults
+    const baseUrl = getBaseUrl();
+    res.locals.baseUrl = baseUrl;
+    res.locals.canonicalUrl = baseUrl + req.path;
+    res.locals.ogType = 'website';
+    res.locals.ogImage = siteSettings.logo ? (siteSettings.logo.startsWith('http') ? siteSettings.logo : baseUrl + siteSettings.logo) : '';
+    res.locals.ogTitle = '';
+    res.locals.ogDescription = '';
+    res.locals.keywords = siteSettings.seoDefaults.keywords || '';
+    res.locals.structuredData = null;
+    res.locals.noindex = false;
     // Load categories for header dropdown on all pages
     const Category = require('./models/Category');
     res.locals.categories = await Category.find({ isActive: true }).sort('sortOrder name').lean();
     next();
   } catch (err) {
     next(err);
+  }
+});
+
+// Sitemap.xml route
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const baseUrl = getBaseUrl();
+    const xml = await generateSitemap(baseUrl);
+    res.set('Content-Type', 'application/xml');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(xml);
+  } catch (err) {
+    console.error('Sitemap error:', err.message);
+    res.status(500).send('Error generating sitemap');
   }
 });
 
