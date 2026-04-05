@@ -20,7 +20,7 @@ router.get('/', async (req, res, next) => {
 
     res.render('pages/home', {
       layout: 'layouts/main',
-      title: siteSettings.seoDefaults.title || 'Buy Verified Accounts & Digital Products Instantly',
+      title: 'Buy Verified Accounts & Digital Products Instantly',
       metaDescription: siteSettings.seoDefaults.description || 'DigitalProductValley is a trusted marketplace to buy verified accounts and digital products. Instant delivery, secure transactions, and 24/7 support.',
       keywords: 'buy verified accounts, digital products, instant delivery, verified social media accounts, bulk accounts, digital marketplace',
       canonicalUrl: baseUrl + '/',

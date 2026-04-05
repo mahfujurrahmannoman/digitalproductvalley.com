@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#E8892F">DigitalProductValley</text>
+  <text x="600" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#cccccc">Buy Verified Accounts &amp; Digital Products</text>
+  <text x="600" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#888888">Instant Delivery | Secure Payment | 24/7 Support</text>
+  <rect x="450" y="430" width="300" height="50" rx="25" fill="#E8892F"/>
+  <text x="600" y="462" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">Shop Now</text>
+</svg>
