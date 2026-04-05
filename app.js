@@ -65,7 +65,8 @@ app.use(async (req, res, next) => {
       error: req.flash('error'),
       info: req.flash('info'),
     };
-    res.locals.siteSettings = await SiteSettings.getSettings();
+    const siteSettings = await SiteSettings.getSettings();
+    res.locals.siteSettings = siteSettings;
     res.locals.notificationCount = req.user ? await notificationService.getUnreadCount(req.user._id) : 0;
     res.locals.helpers = { formatPrice, formatDate, formatDateTime, truncate };
     res.locals.currentPath = req.path;
@@ -77,7 +78,7 @@ app.use(async (req, res, next) => {
     res.locals.ogImage = siteSettings.logo ? (siteSettings.logo.startsWith('http') ? siteSettings.logo : baseUrl + siteSettings.logo) : '';
     res.locals.ogTitle = '';
     res.locals.ogDescription = '';
-    res.locals.keywords = siteSettings.seoDefaults.keywords || '';
+    res.locals.keywords = (siteSettings.seoDefaults && siteSettings.seoDefaults.keywords) || '';
     res.locals.structuredData = null;
     res.locals.noindex = false;
     // Load categories for header dropdown on all pages
