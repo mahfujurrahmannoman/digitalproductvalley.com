@@ -177,6 +177,7 @@ async function generateSitemap(baseUrl) {
     { loc: '/', priority: '1.0', changefreq: 'daily' },
     { loc: '/shop', priority: '0.9', changefreq: 'daily' },
     { loc: '/blog', priority: '0.8', changefreq: 'daily' },
+    { loc: '/pages/sitemap', priority: '0.3', changefreq: 'weekly' },
     { loc: '/pages/about', priority: '0.5', changefreq: 'monthly' },
     { loc: '/pages/terms', priority: '0.3', changefreq: 'monthly' },
     { loc: '/pages/privacy', priority: '0.3', changefreq: 'monthly' },

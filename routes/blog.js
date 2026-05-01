@@ -21,19 +21,29 @@ router.get('/', async (req, res) => {
     .populate('author', 'username')
     .lean();
   const categories = await BlogCategory.find().lean();
+  const pagination = paginate(page, limit, total);
   const baseUrl = getBaseUrl();
+  const blogQs = (req.query.category ? '&category=' + req.query.category : '');
+  const paginationPrevUrl = pagination.hasPrev
+    ? baseUrl + '/blog?page=' + (pagination.page - 1) + blogQs
+    : null;
+  const paginationNextUrl = pagination.hasNext
+    ? baseUrl + '/blog?page=' + (pagination.page + 1) + blogQs
+    : null;
   res.render('pages/blog/index', {
     layout: 'layouts/main',
     title: 'Blog - Tips, Guides & Updates',
     metaDescription: 'Read the latest articles, guides, and tips about verified accounts, digital products, and online marketplace strategies at DigitalProductValley.',
     canonicalUrl: baseUrl + '/blog',
+    paginationPrevUrl: paginationPrevUrl,
+    paginationNextUrl: paginationNextUrl,
     structuredData: getBreadcrumbSchema([
       { name: 'Home', url: '/' },
       { name: 'Blog' },
     ], baseUrl),
     posts,
     categories,
-    pagination: paginate(page, limit, total),
+    pagination: pagination,
     selectedCategory: req.query.category || '',
   });
 });

@@ -61,12 +61,21 @@ exports.shopPage = async (req, res, next) => {
         })),
       },
     };
+    const paginationPrevUrl = pagination.hasPrev
+      ? baseUrl + '/shop?page=' + (pagination.page - 1) + queryString
+      : null;
+    const paginationNextUrl = pagination.hasNext
+      ? baseUrl + '/shop?page=' + (pagination.page + 1) + queryString
+      : null;
+
     res.render('pages/shop', {
       layout: 'layouts/main',
       title: 'Shop - Buy Verified Accounts & Digital Products',
       metaDescription: 'Browse our collection of verified accounts and digital products. Instant delivery, competitive prices, and secure transactions at DigitalProductValley.',
       keywords: 'buy accounts, verified accounts, digital products, social media accounts, instant delivery',
       canonicalUrl: baseUrl + '/shop',
+      paginationPrevUrl: paginationPrevUrl,
+      paginationNextUrl: paginationNextUrl,
       structuredData: [
         getBreadcrumbSchema([
           { name: 'Home', url: '/' },
@@ -330,12 +339,21 @@ exports.categoryPage = async (req, res, next) => {
       catItemList.image = category.image.startsWith('http') ? category.image : baseUrl + category.image;
     }
 
+    const paginationPrevUrl = pagination.hasPrev
+      ? baseUrl + '/shop/category/' + category.slug + '?page=' + (pagination.page - 1) + queryString
+      : null;
+    const paginationNextUrl = pagination.hasNext
+      ? baseUrl + '/shop/category/' + category.slug + '?page=' + (pagination.page + 1) + queryString
+      : null;
+
     res.render('pages/category', {
       layout: 'layouts/main',
       title: 'Buy ' + category.name + ' Accounts - Verified & Instant Delivery',
       metaDescription: catDesc,
       keywords: category.name + ', buy ' + category.name + ' accounts, ' + category.name + ' verified, cheap ' + category.name + ', instant delivery',
       canonicalUrl: baseUrl + '/shop/category/' + category.slug,
+      paginationPrevUrl: paginationPrevUrl,
+      paginationNextUrl: paginationNextUrl,
       ogTitle: 'Buy ' + category.name + ' Accounts - DigitalProductValley',
       ogDescription: catDesc,
       structuredData: [

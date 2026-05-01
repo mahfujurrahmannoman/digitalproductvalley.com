@@ -1,0 +1,54 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">Sitemap</h1>
+  <p class="text-sm text-gray-500 mb-8">A complete overview of all pages on <%= siteSettings.siteName %>.</p>
+
+  <!-- General Pages -->
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold text-gray-700 bg-gray-50 px-4 py-2 rounded-t border border-gray-200">General Pages</h2>
+    <ul class="border border-t-0 border-gray-200 rounded-b divide-y divide-gray-100">
+      <li><a href="/" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">Home</a></li>
+      <li><a href="/shop" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">Shop - All Products</a></li>
+      <li><a href="/blog" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">Blog</a></li>
+      <li><a href="/pages/about" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">About Us</a></li>
+      <li><a href="/pages/terms" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">Terms of Service</a></li>
+      <li><a href="/pages/privacy" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">Privacy Policy</a></li>
+      <li><a href="/pages/api-docs" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50">API Documentation</a></li>
+    </ul>
+  </div>
+
+  <!-- Categories -->
+  <% if (categories && categories.length > 0) { %>
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-700 bg-gray-50 px-4 py-2 rounded-t border border-gray-200">Product Categories</h2>
+      <ul class="border border-t-0 border-gray-200 rounded-b divide-y divide-gray-100">
+        <% categories.forEach(function(cat) { %>
+          <li><a href="/shop/category/<%= cat.slug %>" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50"><%= cat.name %> <%= cat.description ? '- ' + helpers.truncate(cat.description, 80) : '' %></a></li>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+
+  <!-- Products -->
+  <% if (products && products.length > 0) { %>
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-700 bg-gray-50 px-4 py-2 rounded-t border border-gray-200">Latest Products</h2>
+      <ul class="border border-t-0 border-gray-200 rounded-b divide-y divide-gray-100">
+        <% products.forEach(function(p) { %>
+          <li><a href="/product/<%= p.slug %>" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50"><%= p.title %> <span class="text-gray-400 text-xs">(updated <%= helpers.formatDate(p.updatedAt) %>)</span></a></li>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+
+  <!-- Blog Posts -->
+  <% if (posts && posts.length > 0) { %>
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-700 bg-gray-50 px-4 py-2 rounded-t border border-gray-200">Blog Posts</h2>
+      <ul class="border border-t-0 border-gray-200 rounded-b divide-y divide-gray-100">
+        <% posts.forEach(function(p) { %>
+          <li><a href="/blog/<%= p.slug %>" class="block px-4 py-2.5 text-sm text-primary-500 hover:text-primary-600 hover:bg-orange-50"><%= p.title %> <span class="text-gray-400 text-xs">(<%= helpers.formatDate(p.publishedAt) %>)</span></a></li>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+</div>

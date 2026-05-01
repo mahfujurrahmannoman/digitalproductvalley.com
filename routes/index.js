@@ -9,10 +9,11 @@ router.get('/', async (req, res, next) => {
   try {
     const categories = await Category.find({ isActive: true }).sort('sortOrder name').lean();
 
-    // Fetch all active products for accszone-style display
-    const products = await Product.find({ isActive: true })
+    // Fetch limited active products for landing page display (max 50 for performance)
+    const products = await Product.find({ isActive: true, stockCount: { $gt: 0 } })
       .populate('category', 'name slug icon')
       .sort({ createdAt: -1 })
+      .limit(50)
       .lean();
 
     const baseUrl = getBaseUrl();
@@ -71,6 +72,36 @@ router.get('/pages/api-docs', (req, res) => {
     title: 'API Documentation',
     metaDescription: 'DigitalProductValley API documentation for resellers. Integrate our products into your platform with our RESTful API.',
   });
+});
+
+// GET /pages/sitemap - HTML sitemap for users and crawlers
+router.get('/pages/sitemap', async (req, res, next) => {
+  try {
+    const categories = await Category.find({ isActive: true }).sort('sortOrder name').lean();
+    const products = await Product.find({ isActive: true })
+      .select('title slug updatedAt')
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+    const { BlogPost } = require('../models/BlogPost');
+    const posts = await BlogPost.find({ status: 'published' })
+      .select('title slug publishedAt')
+      .sort('-publishedAt')
+      .limit(50)
+      .lean();
+
+    res.render('pages/static/sitemap', {
+      layout: 'layouts/main',
+      title: 'Sitemap - All Pages',
+      metaDescription: 'Browse all pages on DigitalProductValley. Find products, categories, blog posts, and more.',
+      noindex: false,
+      categories,
+      products,
+      posts,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

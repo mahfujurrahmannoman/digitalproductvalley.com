@@ -22,6 +22,14 @@
     <link rel="canonical" href="<%= canonicalUrl %>">
   <% } %>
 
+  <%# Pagination rel=next / rel=prev for SEO %>
+  <% if (typeof paginationPrevUrl !== 'undefined' && paginationPrevUrl) { %>
+    <link rel="prev" href="<%= paginationPrevUrl %>">
+  <% } %>
+  <% if (typeof paginationNextUrl !== 'undefined' && paginationNextUrl) { %>
+    <link rel="next" href="<%= paginationNextUrl %>">
+  <% } %>
+
   <%# Robots meta %>
   <% if (typeof noindex !== 'undefined' && noindex) { %>
     <meta name="robots" content="noindex, nofollow">

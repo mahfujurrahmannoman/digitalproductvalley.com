@@ -10,6 +10,7 @@ Allow: /pages/about
 Allow: /pages/terms
 Allow: /pages/privacy
 Allow: /pages/api-docs
+Allow: /pages/sitemap
 
 Disallow: /admin
 Disallow: /admin/

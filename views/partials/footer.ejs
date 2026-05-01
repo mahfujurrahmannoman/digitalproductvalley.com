@@ -1,7 +1,7 @@
 <!-- Footer -->
 <footer class="bg-white border-t border-gray-200 mt-12">
   <div class="max-w-7xl mx-auto px-4 py-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <!-- Brand & Support -->
       <div>
         <div class="mb-4">
@@ -34,7 +34,21 @@
           <li><a href="/shop" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> All Accounts</a></li>
           <li><a href="/pages/terms" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Terms</a></li>
           <li><a href="/pages/api-docs" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> API Documentation - Reseller Program</a></li>
+          <li><a href="/pages/sitemap" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Sitemap</a></li>
           <li><a href="/supplier/apply" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Supplier Register</a></li>
+        </ul>
+      </div>
+
+      <!-- Popular Categories -->
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-4">Popular Categories</h4>
+        <ul class="space-y-2.5 text-sm">
+          <% if (typeof categories !== 'undefined' && categories) {
+            var footerCats = categories.slice(0, 12);
+            footerCats.forEach(function(cat) { %>
+            <li><a href="/shop/category/<%= cat.slug %>" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> <%= cat.name %></a></li>
+          <% }); } %>
+          <li><a href="/shop" class="text-primary-500 hover:text-primary-600 transition-colors font-medium"><i class="fas fa-chevron-right text-xs mr-1"></i> View All Categories →</a></li>
         </ul>
       </div>
 

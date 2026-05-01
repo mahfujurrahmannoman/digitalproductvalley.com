@@ -66,6 +66,12 @@
 
 <!-- Products Table -->
 <div class="max-w-7xl mx-auto px-4 py-6">
+  <% if (category.description) { %>
+    <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+      <h2 class="text-sm font-semibold text-gray-700 mb-1">About <%= category.name %> Accounts</h2>
+      <p class="text-sm text-gray-600 leading-relaxed"><%= category.description %></p>
+    </div>
+  <% } %>
   <% if (products.length > 0) { %>
     <div class="mb-4">
       <div class="category-header rounded-t">
