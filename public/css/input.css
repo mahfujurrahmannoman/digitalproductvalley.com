@@ -82,7 +82,7 @@
     @apply text-gray-300 font-medium;
   }
   .product-row {
-    @apply bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center px-4 py-3 group;
+    @apply bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center px-4 py-3;
   }
   .product-row .product-icon {
     @apply w-12 h-12 rounded flex-shrink-0 flex items-center justify-center text-white text-lg mr-4 bg-white border border-gray-100 shadow-sm transition-all duration-200 group-hover:scale-105;
@@ -100,7 +100,7 @@
     @apply text-sm font-semibold text-gray-800 w-20 text-center;
   }
   .product-row .btn-buy {
-    @apply bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold py-1.5 px-4 rounded shadow-sm transition-all duration-200 inline-flex items-center gap-1.5 ml-4 active:scale-95;
+    @apply bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold py-1.5 px-4 rounded shadow-sm transition-all duration-200 inline-flex items-center gap-1.5 ml-4;
   }
 
   /* ═══════════ USER SIDEBAR ═══════════ */

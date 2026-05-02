@@ -23,6 +23,10 @@ module.exports = {
           800: '#192340',
           900: '#131c33',
         },
+        pink: {
+          500: '#ec4899',
+          600: '#db2777',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
