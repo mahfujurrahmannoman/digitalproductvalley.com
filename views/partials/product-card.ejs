@@ -56,10 +56,14 @@
   var catName = (product.category && product.category.name) ? product.category.name : '';
 %>
 <div class="product-row">
-  <div class="product-icon <%= _getCatColor(catName) %>">
-    <i class="<%= _getCatIcon(catName) %>"></i>
+  <div class="product-icon bg-gray-100 overflow-hidden border border-gray-100 shadow-sm">
+    <% if (product.image) { %>
+      <img src="<%= product.image %>" alt="<%= product.title %>" class="w-full h-full object-cover">
+    <% } else { %>
+      <img src="/images/default-product.png" alt="<%= product.title %>" class="w-full h-full object-cover">
+    <% } %>
   </div>
-  <a href="/product/<%= product.slug %>" class="product-title hover:text-primary-500 transition-colors">
+  <a href="/product/<%= product.slug %>" class="product-title hover:text-primary-500 transition-colors line-clamp-2">
     <%= product.title %>
   </a>
   <div class="product-stock hidden sm:block">

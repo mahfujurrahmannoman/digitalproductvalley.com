@@ -116,6 +116,7 @@ app.use('/supplier', require('./routes/supplier'));
 app.use('/support', require('./routes/support'));
 app.use('/blog', require('./routes/blog'));
 app.use('/api/v1', require('./routes/api/v1'));
+app.use('/chat', require('./routes/chat'));
 app.use('/admin', require('./routes/admin/index'));
 
 // 404

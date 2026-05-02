@@ -82,10 +82,10 @@
     @apply text-gray-300 font-medium;
   }
   .product-row {
-    @apply bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center px-4 py-3;
+    @apply bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center px-4 py-3 group;
   }
   .product-row .product-icon {
-    @apply w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center text-white text-lg mr-4;
+    @apply w-12 h-12 rounded flex-shrink-0 flex items-center justify-center text-white text-lg mr-4 bg-white border border-gray-100 shadow-sm transition-all duration-200 group-hover:scale-105;
   }
   .product-row .product-title {
     @apply flex-1 text-sm text-gray-800 font-normal;
@@ -100,7 +100,7 @@
     @apply text-sm font-semibold text-gray-800 w-20 text-center;
   }
   .product-row .btn-buy {
-    @apply bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors inline-flex items-center gap-1.5 ml-4;
+    @apply bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold py-1.5 px-4 rounded shadow-sm transition-all duration-200 inline-flex items-center gap-1.5 ml-4 active:scale-95;
   }
 
   /* ═══════════ USER SIDEBAR ═══════════ */
