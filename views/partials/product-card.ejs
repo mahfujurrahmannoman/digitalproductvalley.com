@@ -1,5 +1,4 @@
 <%
-  // Helpers for color/icon if not passed from parent
   var _categoryColors = {
     'facebook': 'bg-blue-600',
     'instagram': 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
@@ -58,9 +57,9 @@
 <div class="product-row">
   <div class="product-icon bg-gray-100 overflow-hidden border border-gray-100 shadow-sm">
     <% if (product.image) { %>
-      <img src="<%= product.image %>" alt="<%= product.title %>" class="w-full h-full object-cover">
+      <img src="<%= product.image %>" alt="<%= product.title %> - verified account" class="w-full h-full object-cover" width="48" height="48" loading="lazy">
     <% } else { %>
-      <img src="/images/default-product.png" alt="<%= product.title %>" class="w-full h-full object-cover">
+      <img src="/images/default-product.png" alt="<%= product.title %> - digital product" class="w-full h-full object-cover" width="48" height="48" loading="lazy">
     <% } %>
   </div>
   <a href="/product/<%= product.slug %>" class="product-title hover:text-primary-500 transition-colors line-clamp-2">
@@ -68,15 +67,15 @@
   </a>
   <div class="product-stock hidden sm:block">
     <% if (product.stockCount > 0) { %>
-      <span class="text-green-600 font-medium"><%= product.stockCount %> pcs.</span>
+      <span class="text-green-600 font-medium"><%= product.stockCount %> in stock</span>
     <% } else { %>
-      <span class="text-red-500 font-medium">0 pcs.</span>
+      <span class="text-red-500 font-medium">Out of stock</span>
     <% } %>
   </div>
-  <div class="product-price-type hidden sm:block">Price per pc</div>
+  <div class="product-price-type hidden sm:block">Price per item</div>
   <div class="product-price">from <%= helpers.formatPrice(product.price) %></div>
   <a href="/product/<%= product.slug %>" class="btn-buy">
     <i class="fas fa-shopping-cart text-xs"></i>
-    Buy
+    Buy Now
   </a>
 </div>

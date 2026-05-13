@@ -78,7 +78,6 @@ app.use(async (req, res, next) => {
     res.locals.ogImage = siteSettings.logo ? (siteSettings.logo.startsWith('http') ? siteSettings.logo : baseUrl + siteSettings.logo) : '';
     res.locals.ogTitle = '';
     res.locals.ogDescription = '';
-    res.locals.keywords = (siteSettings.seoDefaults && siteSettings.seoDefaults.keywords) || '';
     res.locals.structuredData = null;
     res.locals.noindex = false;
     // Load categories for header dropdown on all pages

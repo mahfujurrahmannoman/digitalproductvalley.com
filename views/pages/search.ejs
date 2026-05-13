@@ -31,7 +31,6 @@
     return 'fas fa-globe';
   }
 
-  // Group search results by category
   var grouped = {};
   var catOrder = [];
   if (products && products.length) {
@@ -48,19 +47,18 @@
   }
 %>
 
-<!-- Search Header -->
 <section class="bg-white border-b border-gray-200 py-5">
   <div class="max-w-7xl mx-auto px-4">
     <h1 class="text-xl font-bold text-gray-800 mb-3">
       <% if (searchQuery) { %>
         Search Results for "<%= searchQuery %>"
       <% } else { %>
-        Search Products
+        Search Digital Products
       <% } %>
     </h1>
     <form action="/shop/search" method="GET" class="max-w-lg">
       <div class="flex">
-        <input type="text" name="q" value="<%= searchQuery %>" placeholder="Search for accounts..." class="flex-1 input-field rounded-r-none text-sm py-2">
+        <input type="text" name="q" value="<%= searchQuery %>" placeholder="Search for verified accounts..." class="flex-1 input-field rounded-r-none text-sm py-2">
         <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-5 py-2 rounded-r text-sm font-medium transition-colors">
           <i class="fas fa-search mr-1"></i> Search
         </button>
@@ -72,13 +70,12 @@
   </div>
 </section>
 
-<!-- Search Results -->
 <div class="max-w-7xl mx-auto px-4 py-6">
   <% if (catOrder.length > 0) { %>
     <% catOrder.forEach(function(key) {
       var group = grouped[key];
     %>
-      <div class="mb-4">
+      <section class="mb-4">
         <div class="category-header rounded-t">
           <div class="flex items-center gap-2">
             <i class="<%= getCategoryIcon(group.name) %> text-base"></i>
@@ -95,19 +92,19 @@
             <%- include('../partials/product-card', { product: product, getCategoryColor: getCategoryColor, getCategoryIcon: getCategoryIcon }) %>
           <% }); %>
         </div>
-      </div>
+      </section>
     <% }); %>
 
     <%- include('../partials/pagination') %>
   <% } else { %>
     <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
       <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
-      <h3 class="text-lg font-semibold text-gray-600 mb-2">No results found</h3>
+      <h2 class="text-lg font-semibold text-gray-600 mb-2">No results found</h2>
       <p class="text-sm text-gray-500 mb-4">
         <% if (searchQuery) { %>
-          No products matched "<%= searchQuery %>". Try different keywords.
+          No products matched "<%= searchQuery %>". Try different keywords or browse our <a href="/shop" class="text-primary-500 hover:text-primary-600">shop categories</a>.
         <% } else { %>
-          Enter a search term to find products.
+          Enter a search term to find verified accounts and digital products.
         <% } %>
       </p>
       <a href="/shop" class="btn-primary text-sm">Browse All Products</a>

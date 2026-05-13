@@ -6,11 +6,14 @@
     <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mt-2 mb-4"><%= post.title %></h1>
     <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6">
       <span><i class="fas fa-user mr-1"></i> <%= post.author?.username || 'Admin' %></span>
-      <span><i class="fas fa-calendar mr-1"></i> <%= helpers.formatDate(post.publishedAt) %></span>
+      <span><i class="fas fa-calendar mr-1"></i> <time datetime="<%= post.publishedAt %>"><%= helpers.formatDate(post.publishedAt) %></time></span>
+      <% if (post.updatedAt && new Date(post.updatedAt).getTime() !== new Date(post.publishedAt).getTime()) { %>
+        <span><i class="fas fa-edit mr-1"></i> Updated: <time datetime="<%= post.updatedAt %>"><%= helpers.formatDate(post.updatedAt) %></time></span>
+      <% } %>
       <span><i class="fas fa-eye mr-1"></i> <%= post.viewCount %> views</span>
     </div>
     <% if (post.featuredImage) { %>
-      <img src="<%= post.featuredImage %>" alt="<%= post.title %>" class="w-full rounded-xl mb-6">
+      <img src="<%= post.featuredImage %>" alt="<%= post.title %>" class="w-full rounded-xl mb-6" width="768" height="432" loading="eager">
     <% } %>
     <div class="prose prose-lg dark:prose-invert max-w-none">
       <%- post.content %>
@@ -19,16 +22,18 @@
 
   <% if (relatedPosts.length > 0) { %>
     <hr class="my-8 border-gray-200 dark:border-gray-700">
-    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Related Posts</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <% relatedPosts.forEach(rp => { %>
-        <a href="/blog/<%= rp.slug %>" class="card p-4 hover:shadow-md transition-shadow">
-          <h4 class="font-medium text-gray-800 dark:text-gray-200"><%= rp.title %></h4>
-          <p class="text-xs text-gray-500 mt-1"><%= helpers.formatDate(rp.publishedAt) %></p>
-        </a>
-      <% }) %>
-    </div>
+    <section>
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Related Posts</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <% relatedPosts.forEach(rp => { %>
+          <a href="/blog/<%= rp.slug %>" class="card p-4 hover:shadow-md transition-shadow">
+            <h3 class="font-medium text-gray-800 dark:text-gray-200"><%= rp.title %></h3>
+            <p class="text-xs text-gray-500 mt-1"><time datetime="<%= rp.publishedAt %>"><%= helpers.formatDate(rp.publishedAt) %></time></p>
+          </a>
+        <% }) %>
+      </div>
+    </section>
   <% } %>
 
   <a href="/blog" class="inline-block mt-6 text-primary-500 hover:text-primary-600">&larr; Back to Blog</a>
-</div>
+</main>

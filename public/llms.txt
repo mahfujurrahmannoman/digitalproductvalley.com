@@ -1,0 +1,30 @@
+# DigitalProductValley
+> Trusted marketplace for verified accounts and digital products. Instant delivery, secure transactions, and 24/7 support.
+
+## Core Pages
+- Home: https://digitalproductvalley.com/
+- Shop: https://digitalproductvalley.com/shop
+- About: https://digitalproductvalley.com/pages/about
+- Terms: https://digitalproductvalley.com/pages/terms
+- Privacy: https://digitalproductvalley.com/pages/privacy
+- API Docs: https://digitalproductvalley.com/pages/api-docs
+
+## Key Features
+- Instant delivery of verified digital accounts after payment
+- Secure payment processing with encryption
+- 24/7 customer support via ticket system
+- Bulk purchasing with quantity discounts
+- Replacement guarantee on verified accounts
+- Supplier marketplace for resellers
+
+## Product Categories
+- Facebook accounts (verified, bulk)
+- Instagram accounts (verified, aged)
+- Twitter/X accounts (verified)
+- TikTok accounts
+- YouTube channels
+- Google/Gmail accounts
+- LinkedIn accounts
+- Discord accounts
+- Telegram accounts
+- And more social media & digital products

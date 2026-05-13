@@ -72,7 +72,6 @@ exports.shopPage = async (req, res, next) => {
       layout: 'layouts/main',
       title: 'Shop - Buy Verified Accounts & Digital Products',
       metaDescription: 'Browse our collection of verified accounts and digital products. Instant delivery, competitive prices, and secure transactions at DigitalProductValley.',
-      keywords: 'buy accounts, verified accounts, digital products, social media accounts, instant delivery',
       canonicalUrl: baseUrl + '/shop',
       paginationPrevUrl: paginationPrevUrl,
       paginationNextUrl: paginationNextUrl,
@@ -222,15 +221,10 @@ exports.productDetail = async (req, res, next) => {
 
     const productImage = product.image ? (product.image.startsWith('http') ? product.image : baseUrl + product.image) : '';
 
-    // Extract clean keyword terms from the title
-    const titleWords = product.title.replace(/[–—|·]/g, ' ').split(/\s+/).filter(w => w.length > 2);
-    const uniqueKeywords = [...new Set([categoryName.toLowerCase(), ...titleWords.slice(0, 5).map(w => w.toLowerCase()), 'buy', 'verified', 'instant delivery'])];
-
     res.render('pages/product', {
       layout: 'layouts/main',
       title: product.title,
       metaDescription: metaDesc,
-      keywords: uniqueKeywords.join(', '),
       canonicalUrl: baseUrl + '/product/' + product.slug,
       ogType: 'product',
       ogTitle: product.title + ' - ' + res.locals.siteSettings.siteName,
@@ -350,7 +344,6 @@ exports.categoryPage = async (req, res, next) => {
       layout: 'layouts/main',
       title: 'Buy ' + category.name + ' Accounts - Verified & Instant Delivery',
       metaDescription: catDesc,
-      keywords: category.name + ', buy ' + category.name + ' accounts, ' + category.name + ' verified, cheap ' + category.name + ', instant delivery',
       canonicalUrl: baseUrl + '/shop/category/' + category.slug,
       paginationPrevUrl: paginationPrevUrl,
       paginationNextUrl: paginationNextUrl,

@@ -1,21 +1,20 @@
-<!-- Footer -->
 <footer class="bg-white border-t border-gray-200 mt-12">
   <div class="max-w-7xl mx-auto px-4 py-10">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <!-- Brand & Support -->
       <div>
         <div class="mb-4">
           <% if (siteSettings.logo) { %>
-            <img src="<%= siteSettings.logo %>" alt="<%= siteSettings.siteName %>" class="h-10 mb-3">
+            <img src="<%= siteSettings.logo %>" alt="<%= siteSettings.siteName %>" class="h-10 mb-3" width="160" height="40" loading="lazy">
           <% } else { %>
             <span class="text-2xl font-bold tracking-tight">
               <span class="text-gray-800">Digital</span><span class="text-primary-500">Product</span><span class="text-gray-800">Valley</span>
             </span>
           <% } %>
         </div>
+        <p class="text-sm text-gray-600 mb-3">DigitalProductValley is a trusted marketplace for buying verified accounts and premium digital products. We offer instant delivery, secure payments, and 24/7 support.</p>
         <h4 class="font-semibold text-gray-800 mb-3">Customer Support</h4>
         <a href="/support/new" class="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium py-2 px-4 rounded transition-colors mb-2">
-          <i class="fas fa-pen"></i> New Ticket / Ask a Question
+          <i class="fas fa-pen"></i> Open a Support Ticket
         </a>
         <br>
         <% if (!user || user.role === 'customer') { %>
@@ -25,42 +24,39 @@
         <% } %>
       </div>
 
-      <!-- Useful Links -->
       <div>
         <h4 class="font-semibold text-gray-800 mb-4">Useful Links</h4>
         <ul class="space-y-2.5 text-sm">
-          <li><a href="/" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Home</a></li>
-          <li><a href="/pages/about" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> About Us</a></li>
-          <li><a href="/shop" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> All Accounts</a></li>
-          <li><a href="/pages/terms" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Terms</a></li>
-          <li><a href="/pages/api-docs" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> API Documentation - Reseller Program</a></li>
-          <li><a href="/pages/sitemap" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Sitemap</a></li>
-          <li><a href="/supplier/apply" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> Supplier Register</a></li>
+          <li><a href="/" class="text-gray-600 hover:text-primary-500 transition-colors">Home - Buy Verified Accounts</a></li>
+          <li><a href="/pages/about" class="text-gray-600 hover:text-primary-500 transition-colors">About DigitalProductValley</a></li>
+          <li><a href="/shop" class="text-gray-600 hover:text-primary-500 transition-colors">Shop All Digital Products</a></li>
+          <li><a href="/pages/terms" class="text-gray-600 hover:text-primary-500 transition-colors">Terms of Service</a></li>
+          <li><a href="/pages/api-docs" class="text-gray-600 hover:text-primary-500 transition-colors">Reseller API Documentation</a></li>
+          <li><a href="/pages/sitemap" class="text-gray-600 hover:text-primary-500 transition-colors">Sitemap - All Pages</a></li>
+          <li><a href="/supplier/apply" class="text-gray-600 hover:text-primary-500 transition-colors">Supplier Registration</a></li>
         </ul>
       </div>
 
-      <!-- Popular Categories -->
       <div>
         <h4 class="font-semibold text-gray-800 mb-4">Popular Categories</h4>
         <ul class="space-y-2.5 text-sm">
           <% if (typeof categories !== 'undefined' && categories) {
             var footerCats = categories.slice(0, 12);
             footerCats.forEach(function(cat) { %>
-            <li><a href="/shop/category/<%= cat.slug %>" class="text-gray-600 hover:text-primary-500 transition-colors"><i class="fas fa-chevron-right text-xs text-gray-400 mr-1"></i> <%= cat.name %></a></li>
+            <li><a href="/shop/category/<%= cat.slug %>" class="text-gray-600 hover:text-primary-500 transition-colors">Buy <%= cat.name %> Accounts</a></li>
           <% }); } %>
-          <li><a href="/shop" class="text-primary-500 hover:text-primary-600 transition-colors font-medium"><i class="fas fa-chevron-right text-xs mr-1"></i> View All Categories →</a></li>
+          <li><a href="/shop" class="text-primary-500 hover:text-primary-600 transition-colors font-medium">View All Categories →</a></li>
         </ul>
       </div>
 
-      <!-- Newsletter -->
       <div>
-        <h4 class="font-semibold text-gray-800 mb-4">Subscribe to Newsletter</h4>
-        <p class="text-sm text-gray-500 mb-4">Stay updated with our latest offers and news</p>
+        <h4 class="font-semibold text-gray-800 mb-4">Newsletter</h4>
+        <p class="text-sm text-gray-500 mb-4">Get updates on new products, deals, and tips about verified accounts and digital products.</p>
         <form class="flex gap-0">
           <div class="flex items-center bg-primary-500 text-white px-3 rounded-l">
             <i class="fas fa-envelope"></i>
           </div>
-          <input type="email" placeholder="Enter Your Email..." class="flex-1 px-3 py-2.5 border border-gray-300 border-l-0 text-sm outline-none focus:ring-1 focus:ring-primary-500">
+          <input type="email" placeholder="your@email.com" class="flex-1 px-3 py-2.5 border border-gray-300 border-l-0 text-sm outline-none focus:ring-1 focus:ring-primary-500">
           <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2.5 rounded-r text-sm font-medium transition-colors">
             <i class="fas fa-paper-plane mr-1"></i> Subscribe
           </button>
@@ -69,7 +65,6 @@
     </div>
   </div>
 
-  <!-- Bottom Bar -->
   <div class="border-t border-gray-200 py-4">
     <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
       <span>&copy; <%= new Date().getFullYear() %> <%= siteSettings.siteName %>. All rights reserved.</span>

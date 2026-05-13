@@ -6,28 +6,19 @@ function getBaseUrl() {
   return (process.env.BASE_URL || 'https://digitalproductvalley.com').replace(/\/$/, '');
 }
 
-/**
- * SEO middleware - adds canonical URL and base URL to all responses
- */
 function seoMiddleware(req, res, next) {
   const baseUrl = getBaseUrl();
   res.locals.baseUrl = baseUrl;
   res.locals.canonicalUrl = baseUrl + req.path;
-
-  // Defaults that pages can override
   res.locals.ogType = 'website';
-  res.locals.ogImage = baseUrl + '/images/og-default.png';
+  res.locals.ogImage = baseUrl + '/images/og-default.svg';
   res.locals.ogTitle = '';
   res.locals.ogDescription = '';
-  res.locals.keywords = '';
   res.locals.structuredData = null;
-
+  res.locals.noindex = false;
   next();
 }
 
-/**
- * Generate Organization JSON-LD structured data
- */
 function getOrganizationSchema(siteSettings, baseUrl) {
   const schema = {
     '@context': 'https://schema.org',
@@ -35,6 +26,7 @@ function getOrganizationSchema(siteSettings, baseUrl) {
     name: siteSettings.siteName,
     url: baseUrl,
     description: siteSettings.siteDescription,
+    foundingDate: '2024',
   };
 
   if (siteSettings.logo) {
@@ -46,6 +38,7 @@ function getOrganizationSchema(siteSettings, baseUrl) {
       '@type': 'ContactPoint',
       email: siteSettings.contactEmail,
       contactType: 'customer service',
+      availableLanguage: ['English'],
     };
   }
 
@@ -61,15 +54,13 @@ function getOrganizationSchema(siteSettings, baseUrl) {
   return schema;
 }
 
-/**
- * Generate WebSite JSON-LD with SearchAction
- */
 function getWebSiteSchema(siteSettings, baseUrl) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: siteSettings.siteName,
     url: baseUrl,
+    description: siteSettings.siteDescription,
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -81,9 +72,6 @@ function getWebSiteSchema(siteSettings, baseUrl) {
   };
 }
 
-/**
- * Generate Product JSON-LD
- */
 function getProductSchema(product, baseUrl) {
   const schema = {
     '@context': 'https://schema.org',
@@ -99,6 +87,7 @@ function getProductSchema(product, baseUrl) {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       url: baseUrl + '/product/' + product.slug,
+      priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     },
   };
 
@@ -118,12 +107,13 @@ function getProductSchema(product, baseUrl) {
     };
   }
 
+  if (product.brand) {
+    schema.brand = { '@type': 'Brand', name: product.brand };
+  }
+
   return schema;
 }
 
-/**
- * Generate BreadcrumbList JSON-LD
- */
 function getBreadcrumbSchema(items, baseUrl) {
   return {
     '@context': 'https://schema.org',
@@ -137,9 +127,6 @@ function getBreadcrumbSchema(items, baseUrl) {
   };
 }
 
-/**
- * Generate BlogPosting JSON-LD
- */
 function getBlogPostSchema(post, baseUrl) {
   const schema = {
     '@context': 'https://schema.org',
@@ -149,6 +136,10 @@ function getBlogPostSchema(post, baseUrl) {
     url: baseUrl + '/blog/' + post.slug,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': baseUrl + '/blog/' + post.slug,
+    },
   };
 
   if (post.featuredImage) {
@@ -159,20 +150,45 @@ function getBlogPostSchema(post, baseUrl) {
     schema.author = {
       '@type': 'Person',
       name: post.author.username,
+      url: baseUrl + '/blog',
+    };
+  } else {
+    schema.author = {
+      '@type': 'Organization',
+      name: 'DigitalProductValley',
+      url: baseUrl,
     };
   }
+
+  schema.publisher = {
+    '@type': 'Organization',
+    name: 'DigitalProductValley',
+    url: baseUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: baseUrl + '/images/og-default.svg',
+    },
+  };
 
   return schema;
 }
 
-/**
- * Generate dynamic sitemap XML
- */
+function getPersonSchema(name, username, baseUrl) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: name,
+    url: baseUrl + '/blog',
+    sameAs: [
+      'https://www.linkedin.com/company/digitalproductvalley',
+    ],
+  };
+}
+
 async function generateSitemap(baseUrl) {
   const urls = [];
   const now = new Date().toISOString();
 
-  // Static pages
   const staticPages = [
     { loc: '/', priority: '1.0', changefreq: 'daily' },
     { loc: '/shop', priority: '0.9', changefreq: 'daily' },
@@ -193,7 +209,6 @@ async function generateSitemap(baseUrl) {
   </url>`);
   }
 
-  // Products
   const products = await Product.find({ isActive: true })
     .select('slug updatedAt')
     .lean();
@@ -207,7 +222,6 @@ async function generateSitemap(baseUrl) {
   </url>`);
   }
 
-  // Categories
   const categories = await Category.find({ isActive: true })
     .select('slug updatedAt')
     .lean();
@@ -221,7 +235,6 @@ async function generateSitemap(baseUrl) {
   </url>`);
   }
 
-  // Blog posts
   const posts = await BlogPost.find({ status: 'published' })
     .select('slug updatedAt publishedAt')
     .lean();
@@ -248,6 +261,7 @@ module.exports = {
   getProductSchema,
   getBreadcrumbSchema,
   getBlogPostSchema,
+  getPersonSchema,
   generateSitemap,
   getBaseUrl,
 };

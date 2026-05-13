@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { BlogPost, BlogCategory } = require('../models/BlogPost');
 const { paginate } = require('../utils/helpers');
-const { getBlogPostSchema, getBreadcrumbSchema, getBaseUrl } = require('../middleware/seo');
+const { getBlogPostSchema, getBreadcrumbSchema, getPersonSchema, getBaseUrl } = require('../middleware/seo');
 
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -30,17 +30,38 @@ router.get('/', async (req, res) => {
   const paginationNextUrl = pagination.hasNext
     ? baseUrl + '/blog?page=' + (pagination.page + 1) + blogQs
     : null;
+
+  const blogIndexSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Blog - Tips, Guides & Updates for Digital Products',
+    description: 'Read the latest articles, guides, and tips about verified accounts, digital products, and online marketplace strategies.',
+    url: baseUrl + '/blog',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: total,
+      itemListElement: posts.slice(0, 10).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: baseUrl + '/blog/' + p.slug,
+      })),
+    },
+  };
+
   res.render('pages/blog/index', {
     layout: 'layouts/main',
-    title: 'Blog - Tips, Guides & Updates',
+    title: 'Blog - Tips, Guides & Updates | DigitalProductValley',
     metaDescription: 'Read the latest articles, guides, and tips about verified accounts, digital products, and online marketplace strategies at DigitalProductValley.',
     canonicalUrl: baseUrl + '/blog',
     paginationPrevUrl: paginationPrevUrl,
     paginationNextUrl: paginationNextUrl,
-    structuredData: getBreadcrumbSchema([
-      { name: 'Home', url: '/' },
-      { name: 'Blog' },
-    ], baseUrl),
+    structuredData: [
+      getBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'Blog' },
+      ], baseUrl),
+      blogIndexSchema,
+    ],
     posts,
     categories,
     pagination: pagination,
@@ -80,6 +101,7 @@ router.get('/:slug', async (req, res) => {
         { name: 'Blog', url: '/blog' },
         { name: post.title },
       ], baseUrl),
+      ...(post.author && post.author.username ? [getPersonSchema(post.author.username, post.author.username, baseUrl)] : []),
     ],
     post,
     relatedPosts,

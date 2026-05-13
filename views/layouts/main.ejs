@@ -4,37 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <%# Page Title %>
+  <%# Page Title - front-load primary keyword within first 30 chars, 50-60 chars total %>
   <title><%= typeof title !== 'undefined' && title ? title + ' - ' : '' %><%= siteSettings.siteName %></title>
 
-  <%# Meta Description %>
+  <%# Meta Description - CTR factor, 150-160 chars desktop, front-load value first 100 chars %>
   <meta name="description" content="<%= typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : (siteSettings.seoDefaults.description || siteSettings.siteDescription || '') %>">
 
-  <%# Meta Keywords %>
-  <% if (typeof keywords !== 'undefined' && keywords) { %>
-    <meta name="keywords" content="<%= keywords %>">
-  <% } else if (siteSettings.seoDefaults.keywords) { %>
-    <meta name="keywords" content="<%= siteSettings.seoDefaults.keywords %>">
-  <% } %>
-
-  <%# Canonical URL %>
+  <%# Canonical URL - self-referential, HTTPS, matches sitemap %>
   <% if (typeof canonicalUrl !== 'undefined' && canonicalUrl) { %>
     <link rel="canonical" href="<%= canonicalUrl %>">
   <% } %>
 
-  <%# Pagination rel=next / rel=prev for SEO %>
-  <% if (typeof paginationPrevUrl !== 'undefined' && paginationPrevUrl) { %>
-    <link rel="prev" href="<%= paginationPrevUrl %>">
-  <% } %>
-  <% if (typeof paginationNextUrl !== 'undefined' && paginationNextUrl) { %>
-    <link rel="next" href="<%= paginationNextUrl %>">
-  <% } %>
-
-  <%# Robots meta %>
+  <%# Robots meta with max-image-preview:large for richer SERP/AI snippets %>
   <% if (typeof noindex !== 'undefined' && noindex) { %>
     <meta name="robots" content="noindex, nofollow">
   <% } else { %>
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large">
   <% } %>
 
   <%# Open Graph Tags %>
@@ -75,9 +60,13 @@
     <link rel="shortcut icon" href="<%= siteSettings.favicon %>">
   <% } %>
 
+  <%# Preconnect for performance %>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
   <%# Stylesheets %>
-  <link rel="stylesheet" href="/css/output.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/output.css" media="all">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="all" onload="this.media='all'">
 
   <%# JSON-LD Structured Data %>
   <% if (typeof structuredData !== 'undefined' && structuredData) { %>
@@ -120,6 +109,6 @@
 
   <%- include('../partials/footer') %>
   <%- include('../partials/chat-widget') %>
-  <script src="/js/main.js"></script>
+  <script src="/js/main.js" defer></script>
 </body>
 </html>

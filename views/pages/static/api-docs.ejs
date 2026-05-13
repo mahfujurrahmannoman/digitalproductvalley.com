@@ -1,9 +1,8 @@
-<div class="max-w-5xl mx-auto px-4 py-12">
-  <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">API Documentation</h1>
-  <p class="text-gray-500 dark:text-gray-400 mb-8">Integrate with <%= siteSettings.siteName %> using our REST API.</p>
+<section class="max-w-5xl mx-auto px-4 py-12">
+  <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">API Documentation - Reseller Integration</h1>
+  <p class="text-gray-500 dark:text-gray-400 mb-8">Integrate <%= siteSettings.siteName %> products into your platform using our RESTful API. This API allows resellers to list, search, and purchase verified accounts and digital products programmatically.</p>
 
-  <!-- Authentication -->
-  <div class="card p-6 mb-6">
+  <article class="card p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Authentication</h2>
     <p class="text-gray-600 dark:text-gray-400 mb-4">
       All API requests require an API key. Include your API key in the request header:
@@ -14,22 +13,19 @@
     <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">
       You can generate an API key from your <a href="/user/api-keys" class="text-primary-500 hover:text-primary-600">dashboard settings</a>.
     </p>
-  </div>
+  </article>
 
-  <!-- Base URL -->
-  <div class="card p-6 mb-6">
+  <article class="card p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Base URL</h2>
     <div class="bg-gray-900 rounded-lg p-4 text-sm font-mono text-green-400">
       https://your-domain.com/api/v1
     </div>
-  </div>
+  </article>
 
-  <!-- Endpoints -->
   <div class="space-y-6">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Endpoints</h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">API Endpoints</h2>
 
-    <!-- Products -->
-    <div class="card overflow-hidden">
+    <article class="card overflow-hidden">
       <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="font-semibold text-gray-800 dark:text-white">Products</h3>
       </div>
@@ -39,7 +35,7 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/products</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">List all available products with pagination.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">List all available verified accounts and digital products with pagination.</p>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Query Parameters:</p>
           <div class="table-container">
             <table class="w-full text-sm">
@@ -81,13 +77,12 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/products/:slug</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">Get a single product by slug.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Get a single product by slug with full details including pricing, stock, and account information.</p>
         </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Categories -->
-    <div class="card overflow-hidden">
+    <article class="card overflow-hidden">
       <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="font-semibold text-gray-800 dark:text-white">Categories</h3>
       </div>
@@ -97,13 +92,12 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/categories</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">List all active categories.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">List all active product categories (Facebook, Instagram, TikTok, etc.).</p>
         </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Orders -->
-    <div class="card overflow-hidden">
+    <article class="card overflow-hidden">
       <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="font-semibold text-gray-800 dark:text-white">Orders</h3>
       </div>
@@ -113,7 +107,7 @@
             <span class="badge-info text-xs font-mono">POST</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/orders</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Create a new order.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Create a new order to purchase verified accounts or digital products.</p>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Request Body:</p>
           <div class="bg-gray-900 rounded-lg p-4 text-sm font-mono text-green-400 overflow-x-auto">
 {
@@ -128,7 +122,7 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/orders</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">List your orders.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">List your order history with status and delivery details.</p>
         </div>
 
         <div class="p-6">
@@ -136,13 +130,12 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/orders/:id</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">Get order details including delivered accounts.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Get order details including delivered account credentials and status updates.</p>
         </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Wallet -->
-    <div class="card overflow-hidden">
+    <article class="card overflow-hidden">
       <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="font-semibold text-gray-800 dark:text-white">Wallet</h3>
       </div>
@@ -152,15 +145,14 @@
             <span class="badge-success text-xs font-mono">GET</span>
             <code class="text-sm font-mono text-gray-800 dark:text-gray-200">/wallet/balance</code>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">Get your current wallet balance.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Get your current wallet balance for making purchases.</p>
         </div>
       </div>
-    </div>
+    </article>
 
-    <!-- Response Format -->
-    <div class="card p-6">
+    <article class="card p-6">
       <h3 class="font-semibold text-gray-800 dark:text-white mb-4">Response Format</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">All responses follow this standard format:</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">All API responses follow this standard format:</p>
       <div class="bg-gray-900 rounded-lg p-4 text-sm font-mono text-green-400 overflow-x-auto">
 {
   "success": true,
@@ -173,15 +165,14 @@
   }
 }
       </div>
-    </div>
+    </article>
 
-    <!-- Rate Limiting -->
-    <div class="card p-6">
+    <article class="card p-6">
       <h3 class="font-semibold text-gray-800 dark:text-white mb-4">Rate Limiting</h3>
       <p class="text-sm text-gray-600 dark:text-gray-400">
         API requests are rate-limited to 100 requests per minute per API key.
         If you exceed the limit, you will receive a <code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">429 Too Many Requests</code> response.
       </p>
-    </div>
+    </article>
   </div>
-</div>
+</section>

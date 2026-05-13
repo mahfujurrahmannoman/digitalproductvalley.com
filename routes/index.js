@@ -4,12 +4,9 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { getOrganizationSchema, getWebSiteSchema, getBaseUrl } = require('../middleware/seo');
 
-// GET / - Homepage
 router.get('/', async (req, res, next) => {
   try {
     const categories = await Category.find({ isActive: true }).sort('sortOrder name').lean();
-
-    // Fetch limited active products for landing page display (max 50 for performance)
     const products = await Product.find({ isActive: true, stockCount: { $gt: 0 } })
       .populate('category', 'name slug icon')
       .sort({ createdAt: -1 })
@@ -21,9 +18,8 @@ router.get('/', async (req, res, next) => {
 
     res.render('pages/home', {
       layout: 'layouts/main',
-      title: 'Buy Verified Accounts & Digital Products Instantly',
-      metaDescription: siteSettings.seoDefaults.description || 'DigitalProductValley is a trusted marketplace to buy verified accounts and digital products. Instant delivery, secure transactions, and 24/7 support.',
-      keywords: 'buy verified accounts, digital products, instant delivery, verified social media accounts, bulk accounts, digital marketplace',
+      title: 'Buy Verified Accounts & Digital Products - Instant Delivery',
+      metaDescription: 'DigitalProductValley is a trusted marketplace to buy verified accounts and digital products. Instant delivery, secure transactions, and 24/7 support.',
       canonicalUrl: baseUrl + '/',
       structuredData: [
         getOrganizationSchema(siteSettings, baseUrl),
@@ -38,43 +34,38 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /pages/about - About page
 router.get('/pages/about', (req, res) => {
   res.render('pages/static/about', {
     layout: 'layouts/main',
-    title: 'About Us',
+    title: 'About Us - Trusted Digital Accounts Marketplace',
     metaDescription: 'Learn about DigitalProductValley - a trusted marketplace for verified accounts and digital products with instant delivery and secure transactions.',
   });
 });
 
-// GET /pages/terms - Terms page
 router.get('/pages/terms', (req, res) => {
   res.render('pages/static/terms', {
     layout: 'layouts/main',
-    title: 'Terms of Service',
+    title: 'Terms of Service - DigitalProductValley',
     metaDescription: 'Read the Terms of Service for DigitalProductValley. Understand our policies on purchases, refunds, account usage, and marketplace rules.',
   });
 });
 
-// GET /pages/privacy - Privacy page
 router.get('/pages/privacy', (req, res) => {
   res.render('pages/static/privacy', {
     layout: 'layouts/main',
-    title: 'Privacy Policy',
+    title: 'Privacy Policy - DigitalProductValley',
     metaDescription: 'DigitalProductValley Privacy Policy. Learn how we collect, use, and protect your personal information and data.',
   });
 });
 
-// GET /pages/api-docs - API documentation page
 router.get('/pages/api-docs', (req, res) => {
   res.render('pages/static/api-docs', {
     layout: 'layouts/main',
-    title: 'API Documentation',
+    title: 'API Documentation - Reseller Integration',
     metaDescription: 'DigitalProductValley API documentation for resellers. Integrate our products into your platform with our RESTful API.',
   });
 });
 
-// GET /pages/sitemap - HTML sitemap for users and crawlers
 router.get('/pages/sitemap', async (req, res, next) => {
   try {
     const categories = await Category.find({ isActive: true }).sort('sortOrder name').lean();
@@ -92,7 +83,7 @@ router.get('/pages/sitemap', async (req, res, next) => {
 
     res.render('pages/static/sitemap', {
       layout: 'layouts/main',
-      title: 'Sitemap - All Pages',
+      title: 'Sitemap - All Pages | DigitalProductValley',
       metaDescription: 'Browse all pages on DigitalProductValley. Find products, categories, blog posts, and more.',
       noindex: false,
       categories,

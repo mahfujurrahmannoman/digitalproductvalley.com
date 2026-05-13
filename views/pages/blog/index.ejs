@@ -1,14 +1,12 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">Blog - Tips, Guides & Updates</h1>
 
-  <% if (categories.length > 0) { %>
-    <div class="flex flex-wrap gap-2 mb-6">
-      <a href="/blog" class="px-3 py-1 rounded-full text-sm <%= !selectedCategory ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>">All</a>
-      <% categories.forEach(c => { %>
-        <a href="/blog?category=<%= c.slug %>" class="px-3 py-1 rounded-full text-sm <%= selectedCategory === c.slug ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>"><%= c.name %></a>
-      <% }) %>
-    </div>
-  <% } %>
+  <nav class="flex flex-wrap gap-2 mb-6">
+    <a href="/blog" class="px-3 py-1 rounded-full text-sm <%= !selectedCategory ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>">All</a>
+    <% categories.forEach(c => { %>
+      <a href="/blog?category=<%= c.slug %>" class="px-3 py-1 rounded-full text-sm <%= selectedCategory === c.slug ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200' %>"><%= c.name %></a>
+    <% }) %>
+  </nav>
 
   <% if (posts.length === 0) { %>
     <div class="card p-8 text-center"><p class="text-gray-500">No posts yet</p></div>
@@ -17,7 +15,7 @@
       <% posts.forEach(post => { %>
         <article class="card overflow-hidden hover:shadow-md transition-shadow">
           <% if (post.featuredImage) { %>
-            <img src="<%= post.featuredImage %>" alt="<%= post.title %>" class="w-full h-48 object-cover">
+            <img src="<%= post.featuredImage %>" alt="<%= post.title %>" class="w-full h-48 object-cover" loading="lazy" width="400" height="192">
           <% } else { %>
             <div class="w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><i class="fas fa-newspaper text-3xl text-gray-300"></i></div>
           <% } %>
@@ -31,7 +29,7 @@
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3"><%= helpers.truncate(post.excerpt || post.content, 120) %></p>
             <div class="flex items-center justify-between text-xs text-gray-400">
               <span><%= post.author?.username || 'Admin' %></span>
-              <span><%= helpers.formatDate(post.publishedAt) %></span>
+              <time datetime="<%= post.publishedAt %>"><%= helpers.formatDate(post.publishedAt) %></time>
             </div>
           </div>
         </article>
@@ -39,4 +37,4 @@
     </div>
     <%- include('../../partials/pagination') %>
   <% } %>
-</div>
+</main>
