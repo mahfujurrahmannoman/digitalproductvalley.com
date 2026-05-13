@@ -3,9 +3,15 @@ const SiteSettings = require('../models/SiteSettings');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai = null;
+
+function getOpenAI() {
+  if (!openai) {
+    if (!process.env.OPENAI_API_KEY) return null;
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return openai;
+}
 
 const SYSTEM_PROMPT = `You are a helpful customer support assistant for DigitalProductValley, a premium digital products marketplace.
 
@@ -48,7 +54,8 @@ ${popularProducts.map(p => `- ${p.name} ($${p.price}) - ${p.category?.name || 'N
 }
 
 async function chat(userMessage, conversationHistory = []) {
-  if (!process.env.OPENAI_API_KEY) {
+  const client = getOpenAI();
+  if (!client) {
     return {
       success: false,
       message: 'AI chatbot is not configured. Please contact support.',
@@ -64,7 +71,7 @@ async function chat(userMessage, conversationHistory = []) {
       { role: 'user', content: userMessage },
     ];
 
-    const response = await openai.chat.completions.create({
+    const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: messages,
       temperature: 0.7,
